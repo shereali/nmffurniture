@@ -1,10 +1,27 @@
 <template>
   <div>
-    <div style="margin-bottom: 2rem;">
-      <h1 style="font-size: 1.85rem; font-family: var(--font-sans); font-weight: 700; margin-bottom: 0.25rem;">
-        Dashboard Overview
-      </h1>
-      <p style="font-size: 0.9rem; color: var(--color-text-muted);">Real-time performance metrics and store management.</p>
+    <div class="flex justify-between items-center" style="margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 1.85rem; font-family: var(--font-sans); font-weight: 700; margin-bottom: 0.25rem;">
+          Executive Dashboard
+        </h1>
+        <p style="font-size: 0.9rem; color: var(--color-text-muted);">
+          Real-time performance metrics, order fulfillment, customer leads, and factory inventory health.
+        </p>
+      </div>
+
+      <!-- Quick Action Shortcuts -->
+      <div class="flex gap-2 flex-wrap">
+        <NuxtLink to="/admin/products" class="btn btn-primary btn-sm">
+          <i class="fa-solid fa-plus"></i> New Product
+        </NuxtLink>
+        <NuxtLink to="/admin/inquiries" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-envelope-open-text"></i> View Leads
+        </NuxtLink>
+        <button @click="loadDashboard" class="btn btn-outline btn-sm">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
     </div>
 
     <!-- Stats Grid -->
@@ -25,7 +42,17 @@
         </div>
         <div class="stat-info">
           <h3>{{ metrics.total_orders || 0 }}</h3>
-          <p>Total Orders ({{ metrics.pending_orders || 0 }} Pending)</p>
+          <p>Orders ({{ metrics.pending_orders || 0 }} Pending)</p>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon" style="background-color: #FCE8E6; color: #C5221F;">
+          <i class="fa-solid fa-comments"></i>
+        </div>
+        <div class="stat-info">
+          <h3>{{ metrics.new_inquiries || 0 }}</h3>
+          <p>New Inquiries / Leads</p>
         </div>
       </div>
 
@@ -35,29 +62,24 @@
         </div>
         <div class="stat-info">
           <h3>{{ metrics.total_products || 0 }}</h3>
-          <p>Active Models</p>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon" style="background-color: #F3E5F5; color: #6A1B9A;">
-          <i class="fa-solid fa-users"></i>
-        </div>
-        <div class="stat-info">
-          <h3>{{ metrics.total_customers || 0 }}</h3>
-          <p>Registered Customers</p>
+          <p>Catalog Models</p>
         </div>
       </div>
     </div>
 
-    <!-- Recent Orders & Stock Alerts Grid -->
-    <div style="display: grid; grid-template-columns: 1.4fr 0.8fr; gap: 2rem; align-items: start;">
+    <!-- Recent Orders & Recent Inquiries Grid -->
+    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: start; margin-bottom: 2rem;">
       <!-- Recent Orders Card -->
       <div class="data-table-card">
         <div class="data-table-header">
-          <h3 style="font-size: 1.15rem; font-weight: 700; font-family: var(--font-sans);">Recent Orders</h3>
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; font-family: var(--font-sans); margin-bottom: 0.15rem;">
+              Recent Orders
+            </h3>
+            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Awaiting packaging & delivery</div>
+          </div>
           <NuxtLink to="/admin/orders" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
-            View All Orders →
+            View All →
           </NuxtLink>
         </div>
 
@@ -66,15 +88,15 @@
             <tr>
               <th>Order #</th>
               <th>Customer</th>
-              <th>Total (RM)</th>
+              <th>Total</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="ord in recentOrders" :key="ord.id">
-              <td style="font-weight: 700;">{{ ord.order_number }}</td>
+              <td style="font-weight: 700; color: var(--color-primary);">{{ ord.order_number }}</td>
               <td>
-                <div>{{ ord.customer_name }}</div>
+                <div style="font-weight: 600;">{{ ord.customer_name }}</div>
                 <div style="font-size: 0.75rem; color: var(--color-text-light);">{{ ord.customer_phone }}</div>
               </td>
               <td style="font-weight: 700;">
@@ -94,35 +116,119 @@
         </div>
       </div>
 
-      <!-- Low Stock Alerts -->
+      <!-- Recent Inquiries & Leads Card -->
       <div class="data-table-card">
         <div class="data-table-header">
-          <h3 style="font-size: 1.15rem; font-weight: 700; font-family: var(--font-sans);">Inventory Health</h3>
-          <NuxtLink to="/admin/products" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
-            Manage Stock
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; font-family: var(--font-sans); margin-bottom: 0.15rem;">
+              Incoming Customer Leads
+            </h3>
+            <div style="font-size: 0.75rem; color: var(--color-text-muted);">Custom sofas & showroom requests</div>
+          </div>
+          <NuxtLink to="/admin/inquiries" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
+            View All →
           </NuxtLink>
         </div>
 
-        <div v-if="lowStockProducts.length > 0" class="flex flex-col gap-3" style="padding: 1.25rem;">
-          <div
-            v-for="p in lowStockProducts"
-            :key="p.id"
-            class="flex items-center justify-between"
-            style="padding-bottom: 0.75rem; border-bottom: 1px solid var(--color-border);"
-          >
-            <div>
-              <div style="font-weight: 600; font-size: 0.9rem;">{{ p.name }}</div>
-              <div style="font-size: 0.75rem; color: var(--color-text-light);">SKU: {{ p.sku }}</div>
-            </div>
-            <span style="font-weight: 700; color: var(--color-danger); font-size: 0.85rem; background: var(--color-danger-bg); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm);">
-              {{ p.stock }} left in stock
-            </span>
-          </div>
-        </div>
+        <table class="data-table" v-if="recentInquiries.length > 0">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Subject</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="inq in recentInquiries" :key="inq.id">
+              <td>
+                <div style="font-weight: 700;">{{ inq.name }}</div>
+                <div style="font-size: 0.75rem; color: var(--color-text-light);">{{ inq.phone }}</div>
+              </td>
+              <td>
+                <div style="font-size: 0.85rem; font-weight: 600;">{{ inq.subject || 'Custom Living' }}</div>
+                <div style="font-size: 0.75rem; color: var(--color-text-muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                  {{ inq.message }}
+                </div>
+              </td>
+              <td>
+                <span :class="['badge-status', inq.status]">
+                  {{ inq.status }}
+                </span>
+              </td>
+              <td>
+                <a
+                  :href="getWhatsAppLink(inq.phone)"
+                  target="_blank"
+                  class="btn btn-sm"
+                  style="background: #25D366; color: #FFFFFF; border: none; font-size: 0.75rem; padding: 0.2rem 0.5rem;"
+                  title="WhatsApp"
+                >
+                  <i class="fa-brands fa-whatsapp"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-        <div v-else style="padding: 2.5rem; text-align: center; color: #2E7D32; font-weight: 600;">
-          <i class="fa-solid fa-circle-check"></i> All inventory healthy!
+        <div v-else style="padding: 2.5rem; text-align: center; color: var(--color-text-muted);">
+          No pending inquiries.
         </div>
+      </div>
+    </div>
+
+    <!-- Inventory Health -->
+    <div class="data-table-card">
+      <div class="data-table-header">
+        <div>
+          <h3 style="font-size: 1.15rem; font-weight: 700; font-family: var(--font-sans); margin-bottom: 0.15rem;">
+            Low Stock Inventory Alerts (≤ 10 Units)
+          </h3>
+          <div style="font-size: 0.75rem; color: var(--color-text-muted);">Products requiring assembly restock</div>
+        </div>
+        <NuxtLink to="/admin/products" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
+          Manage Catalog →
+        </NuxtLink>
+      </div>
+
+      <table class="data-table" v-if="lowStockProducts.length > 0">
+        <thead>
+          <tr>
+            <th>Product Model</th>
+            <th>SKU</th>
+            <th>Stock Left</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="p in lowStockProducts" :key="p.id">
+            <td>
+              <div class="flex items-center gap-3">
+                <img
+                  :src="p.images?.[0]?.image_url || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=100&q=80'"
+                  :alt="p.name"
+                  style="width: 42px; height: 42px; object-fit: cover; border-radius: var(--radius-sm);"
+                />
+                <span style="font-weight: 600;">{{ p.name }}</span>
+              </div>
+            </td>
+            <td style="font-family: monospace; font-size: 0.85rem;">{{ p.sku }}</td>
+            <td>
+              <span style="color: var(--color-danger); font-weight: 700;">
+                {{ p.stock }} units remaining
+              </span>
+            </td>
+            <td>
+              <NuxtLink to="/admin/products" class="btn btn-outline btn-sm" style="font-size: 0.75rem;">
+                Restock
+              </NuxtLink>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div v-else style="padding: 2.5rem; text-align: center; color: var(--color-text-muted);">
+        All models have healthy inventory levels (> 10 units).
       </div>
     </div>
   </div>
@@ -141,21 +247,32 @@ const apiBase = config.public.apiBase
 
 const metrics = ref<any>({})
 const recentOrders = ref<any[]>([])
+const recentInquiries = ref<any[]>([])
 const lowStockProducts = ref<any[]>([])
+const loading = ref(false)
+
+function getWhatsAppLink(phone: string) {
+  const cleanPhone = (phone || '').replace(/[^0-9]/g, '')
+  const formattedPhone = cleanPhone.startsWith('60') ? cleanPhone : cleanPhone.startsWith('0') ? '6' + cleanPhone : cleanPhone
+  return `https://wa.me/${formattedPhone}`
+}
 
 async function loadDashboard() {
   if (!authStore.token) return
+  loading.value = true
   try {
     const res: any = await $fetch(`${apiBase}/admin/dashboard`, {
-      headers: {
-        Authorization: `Bearer ${authStore.token}`
-      }
+      headers: { Authorization: `Bearer ${authStore.token}` }
     })
+
     metrics.value = res.metrics || {}
     recentOrders.value = res.recent_orders || []
+    recentInquiries.value = res.recent_inquiries || []
     lowStockProducts.value = res.low_stock_products || []
   } catch (e) {
-    console.error('Failed to load admin dashboard', e)
+    console.error('Failed to load dashboard metrics', e)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -163,11 +280,3 @@ onMounted(() => {
   loadDashboard()
 })
 </script>
-
-<style scoped>
-@media (max-width: 992px) {
-  div[style*="grid-template-columns: 1.4fr 0.8fr"] {
-    grid-template-columns: 1fr !important;
-  }
-}
-</style>

@@ -200,3 +200,72 @@
 .badge-status.delivered { background-color: #D1E7DD; color: #0F5132; }
 .badge-status.cancelled { background-color: #F8D7DA; color: #721C24; }
 .badge-status.paid { background-color: #D4EDDA; color: #155724; }
+.badge-status.new { background-color: #FCE8E6; color: #C5221F; }
+.badge-status.contacted { background-color: #FEF7E0; color: #B06000; }
+.badge-status.closed { background-color: #E6F4EA; color: #137333; }
+.badge-status.active { background-color: #E6F4EA; color: #137333; }
+.badge-status.inactive { background-color: #F1F3F4; color: #5F6368; }
+
+/* Admin Nav Counter Badges */
+.admin-badge-count {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-full);
+  line-height: 1;
+}
+
+.admin-badge-count.danger {
+  background-color: #EA4335;
+  color: #FFFFFF;
+}
+
+.admin-badge-count.warning {
+  background-color: #FBBC04;
+  color: #202124;
+}
+
+/* Mobile responsive drawer */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -280px;
+    width: 270px;
+    z-index: 500;
+    transition: left var(--transition-normal);
+  }
+
+  .admin-sidebar.open {
+    left: 0;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+  }
+
+  .admin-content {
+    padding: 1.25rem;
+  }
+}
+
+/* Print Invoice Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #printable-invoice, #printable-invoice * {
+    visibility: visible;
+  }
+  #printable-invoice {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+    background: #FFFFFF !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

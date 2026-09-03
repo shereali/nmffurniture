@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\Api\Admin\AdminCategoryController;
 use App\Http\Controllers\Api\Admin\AdminCustomerController;
+use App\Http\Controllers\Api\Admin\AdminGalleryController;
+use App\Http\Controllers\Api\Admin\AdminInquiryController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Admin\AdminProductController;
+use App\Http\Controllers\Api\Admin\AdminShowroomController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
@@ -78,4 +81,16 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
     // Admin Customers
     Route::get('/customers', [AdminCustomerController::class, 'index']);
+
+    // Admin Inquiries / Leads
+    Route::get('/inquiries', [AdminInquiryController::class, 'index']);
+    Route::get('/inquiries/{id}', [AdminInquiryController::class, 'show']);
+    Route::patch('/inquiries/{id}/status', [AdminInquiryController::class, 'updateStatus']);
+    Route::delete('/inquiries/{id}', [AdminInquiryController::class, 'destroy']);
+
+    // Admin Gallery Showcase
+    Route::apiResource('/gallery', AdminGalleryController::class);
+
+    // Admin Showrooms
+    Route::apiResource('/showrooms', AdminShowroomController::class);
 });

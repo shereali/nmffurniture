@@ -35,6 +35,11 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+        $recentInquiries = Inquiry::with('product')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
         return response()->json([
             'metrics' => [
                 'total_sales' => $totalSales,
@@ -46,6 +51,7 @@ class DashboardController extends Controller
                 'new_inquiries' => $newInquiries,
             ],
             'recent_orders' => $recentOrders,
+            'recent_inquiries' => $recentInquiries,
             'low_stock_products' => $lowStockProducts,
         ]);
     }
