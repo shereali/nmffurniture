@@ -811,13 +811,13 @@
   position: relative;
 }
 
-.footer-col p, .footer-col a {
+.footer-col p, .footer-col a:not(.btn):not(.footer-whatsapp-btn) {
   color: #B4B7BA;
   font-size: 0.9rem;
   line-height: 1.8;
 }
 
-.footer-col a:hover {
+.footer-col a:not(.btn):not(.footer-whatsapp-btn):hover {
   color: var(--color-secondary);
 }
 

@@ -43,17 +43,23 @@
         <!-- Col 4: Showroom & Direct Contact -->
         <div class="footer-col">
           <h4>Shah Alam Showroom</h4>
-          <p style="font-size: 0.875rem; margin-bottom: 0.75rem;">
+          <p style="font-size: 0.875rem; margin-bottom: 0.65rem;">
             2nd Floor, Lobby 3, UG41 Komersial Radia, Persiaran Arked, Bukit Jelutong, 40150 Shah Alam, Selangor.
           </p>
+
+          <div class="footer-hours-badge">
+            <i class="fa-regular fa-clock"></i>
+            <span>Tue – Sun: 10:30 AM – 7:30 PM</span>
+          </div>
+
           <div style="margin-top: 1rem;">
             <a
               :href="`https://wa.me/${whatsappDefault}?text=Hye%20NMFFurniture%20BJ`"
               target="_blank"
-              class="btn btn-whatsapp btn-sm"
-              style="width: 100%; text-transform: none;"
+              class="footer-whatsapp-btn"
             >
-              <i class="fa-brands fa-whatsapp"></i> Chat with Shah Alam Showroom
+              <i class="fa-brands fa-whatsapp"></i>
+              <span>Chat with Showroom Concierge</span>
             </a>
           </div>
         </div>
@@ -76,3 +82,62 @@ const config = useRuntimeConfig()
 const ssmNumber = config.public.ssmNumber || 'SSM 1400875-P'
 const whatsappDefault = config.public.whatsappDefault || '60192589920'
 </script>
+
+<style scoped>
+.footer-hours-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: #D1D5DB;
+  margin-top: 0.25rem;
+}
+
+.footer-hours-badge i {
+  color: var(--color-secondary);
+  font-size: 0.85rem;
+}
+
+.footer-whatsapp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  background: linear-gradient(135deg, #1EBE5D 0%, #15803D 100%);
+  color: #FFFFFF !important;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(30, 190, 93, 0.2);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.footer-whatsapp-btn i {
+  font-size: 1.15rem;
+  color: #FFFFFF !important;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.footer-whatsapp-btn:hover {
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+  color: #FFFFFF !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(30, 190, 93, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.footer-whatsapp-btn:hover i {
+  transform: scale(1.1);
+}
+</style>
