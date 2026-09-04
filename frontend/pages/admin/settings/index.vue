@@ -58,20 +58,38 @@
       <div class="grid grid-cols-2 gap-6 mt-6">
         <div class="form-group">
           <label class="form-label">Brand / Site Name</label>
-          <input v-model="formSettings.site_name" type="text" class="form-input" placeholder="NMFFurniture" />
-          <span class="form-hint">Displayed in header, emails, and browser title</span>
+          <input v-model="formSettings.site_name" type="text" class="form-input" placeholder="NMF Furniture" />
+          <span class="form-hint">Global brand name used across the store and in browser titles</span>
         </div>
 
         <div class="form-group">
           <label class="form-label">Brand Tagline</label>
-          <input v-model="formSettings.site_tagline" type="text" class="form-input" placeholder="Bespoke Handcrafted Living Furniture" />
-          <span class="form-hint">Secondary brand descriptor in header and footer</span>
+          <input v-model="formSettings.site_tagline" type="text" class="form-input" placeholder="Bespoke Handcrafted Living Furniture Malaysia" />
+          <span class="form-hint">Marketing tagline used in footer, hero section, and SEO metadata</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Navbar Brand Primary Text</label>
+          <input v-model="formSettings.brand_name_primary" type="text" class="form-input" placeholder="NMF" />
+          <span class="form-hint">First word of text logo in top navbar</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Navbar Brand Accent Text</label>
+          <input v-model="formSettings.brand_name_accent" type="text" class="form-input" placeholder="FURNITURE" />
+          <span class="form-hint">Highlighted serif word of text logo in top navbar</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Navbar Brand Badge</label>
+          <input v-model="formSettings.brand_badge" type="text" class="form-input" placeholder="SDN BHD" />
+          <span class="form-hint">Small corporate pill badge (e.g. SDN BHD, MALAYSIA, or leave empty)</span>
         </div>
 
         <div class="form-group">
           <label class="form-label">Official SSM Registration No.</label>
           <input v-model="formSettings.ssm_number" type="text" class="form-input" placeholder="SSM 1400875-P" />
-          <span class="form-hint">Official Malaysian government registration seal</span>
+          <span class="form-hint">Official Malaysian government registration seal (shown in footer & trust bar)</span>
         </div>
 
         <div class="form-group">

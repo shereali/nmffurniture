@@ -4,9 +4,12 @@
       <div class="footer-grid">
         <!-- Col 1: About & SSM -->
         <div class="footer-col">
-          <h3 style="color: #FFFFFF; font-size: 1.5rem; margin-bottom: 0.75rem; letter-spacing: 0.05em;">
-            {{ siteName }} <span style="color: var(--color-secondary);">{{ siteTagline }}</span>
+          <h3 style="color: #FFFFFF; font-size: 1.5rem; margin-bottom: 0.35rem; letter-spacing: 0.05em;">
+            {{ siteName }}
           </h3>
+          <p style="font-size: 0.85rem; color: var(--color-secondary); margin-bottom: 0.85rem; font-weight: 500;">
+            {{ siteTagline }}
+          </p>
           <p style="margin-bottom: 1rem;">
             {{ footerAboutText }}
           </p>

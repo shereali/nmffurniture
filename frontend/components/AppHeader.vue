@@ -13,8 +13,11 @@
     <nav class="nav-container">
       <!-- Logo -->
       <NuxtLink to="/" class="brand-logo">
-        {{ siteName }} <span class="accent">{{ siteTagline }}</span>
-        <span class="brand-badge">{{ ssmNumber }}</span>
+        <img v-if="siteLogo" :src="siteLogo" :alt="siteName" style="height: 38px; width: auto; object-fit: contain;" />
+        <template v-else>
+          {{ brandPrimary }} <span v-if="brandAccent" class="accent">{{ brandAccent }}</span>
+          <span v-if="brandBadge" class="brand-badge">{{ brandBadge }}</span>
+        </template>
       </NuxtLink>
 
       <!-- Dynamic Desktop Navigation Menu -->
@@ -310,9 +313,25 @@ const router = useRouter()
 const isMobileMenuOpen = ref(false)
 
 // Dynamic Website Settings Getters
-const siteName = computed(() => settingsStore.getSetting('site_name', 'NMF'))
-const siteTagline = computed(() => settingsStore.getSetting('site_tagline', 'FURNITURE'))
-const ssmNumber = computed(() => settingsStore.getSetting('ssm_number', 'SDN BHD'))
+const siteName = computed(() => settingsStore.getSetting('site_name', 'NMF Furniture'))
+const siteLogo = computed(() => settingsStore.getSetting('site_logo', ''))
+const brandPrimary = computed(() => {
+  const custom = settingsStore.getSetting('brand_name_primary')
+  if (custom) return custom
+  const name = siteName.value || 'NMF'
+  if (name.toLowerCase().replace(/\s+/g, '') === 'nmffurniture') return 'NMF'
+  const parts = name.split(' ')
+  return parts[0] || 'NMF'
+})
+const brandAccent = computed(() => {
+  const custom = settingsStore.getSetting('brand_name_accent')
+  if (custom) return custom
+  const name = siteName.value || 'NMF'
+  if (name.toLowerCase().replace(/\s+/g, '') === 'nmffurniture') return 'FURNITURE'
+  const parts = name.split(' ')
+  return parts.slice(1).join(' ') || 'FURNITURE'
+})
+const brandBadge = computed(() => settingsStore.getSetting('brand_badge', 'SDN BHD'))
 const isAnnouncementActive = computed(() => settingsStore.isAnnouncementEnabled)
 const announcement1 = computed(() => settingsStore.getSetting('announcement_text_1', '5-Year Solid Wood Warranty on All Sofas'))
 const announcement2 = computed(() => settingsStore.getSetting('announcement_text_2', 'In-House Malaysian Manufacturer'))
