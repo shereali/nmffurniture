@@ -1,61 +1,59 @@
 <template>
   <header class="site-header">
-    <!-- Announcement Bar -->
-    <div class="announcement-bar">
-      <span>5-Year Solid Wood Warranty on All Sofas</span>
+    <!-- Dynamic Announcement Bar -->
+    <div v-if="isAnnouncementActive" class="announcement-bar">
+      <span>{{ announcement1 }}</span>
       <span class="sep">•</span>
-      <span>In-House Malaysian Manufacturer</span>
+      <span>{{ announcement2 }}</span>
       <span class="sep">•</span>
-      <NuxtLink to="/our-showroom">Visit Showrooms in Shah Alam & PJ →</NuxtLink>
+      <NuxtLink :to="announcementLinkUrl">{{ announcementLinkText }}</NuxtLink>
     </div>
 
     <!-- Navigation Bar -->
     <nav class="nav-container">
       <!-- Logo -->
       <NuxtLink to="/" class="brand-logo">
-        NMF <span class="accent">FURNITURE</span>
-        <span class="brand-badge">SDN BHD</span>
+        {{ siteName }} <span class="accent">{{ siteTagline }}</span>
+        <span class="brand-badge">{{ ssmNumber }}</span>
       </NuxtLink>
 
-      <!-- Desktop Navigation Menu -->
+      <!-- Dynamic Desktop Navigation Menu -->
       <div class="nav-menu" style="display: flex;">
-        <div class="dropdown">
-          <NuxtLink to="/shop" class="nav-link">
-            CATEGORY <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; margin-left: 0.25rem;"></i>
-          </NuxtLink>
-          <div class="dropdown-menu">
-            <NuxtLink to="/shop" class="dropdown-item">
-              <i class="fa-solid fa-border-all" style="width: 20px; color: var(--color-secondary-dark);"></i> All Products
+        <template v-for="item in headerNavItems" :key="item.id">
+          <!-- Dropdown Menu Item -->
+          <div v-if="item.children && item.children.length > 0" class="dropdown">
+            <NuxtLink :to="item.url" class="nav-link" :target="item.target || '_self'">
+              <i v-if="item.icon" :class="item.icon" style="margin-right: 0.35rem; font-size: 0.75rem;"></i>
+              {{ item.title }}
+              <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; margin-left: 0.25rem;"></i>
             </NuxtLink>
-            <NuxtLink to="/shop?category=sofa" class="dropdown-item">
-              <i class="fa-solid fa-couch" style="width: 20px; color: var(--color-secondary-dark);"></i> Sofas & Lounges
-            </NuxtLink>
-            <NuxtLink to="/shop?category=wing-chair" class="dropdown-item">
-              <i class="fa-solid fa-chair" style="width: 20px; color: var(--color-secondary-dark);"></i> Wing Chairs
-            </NuxtLink>
-            <NuxtLink to="/shop?category=coffee-table" class="dropdown-item">
-              <i class="fa-solid fa-table" style="width: 20px; color: var(--color-secondary-dark);"></i> Coffee Tables
-            </NuxtLink>
-            <NuxtLink to="/shop?category=bed-frame" class="dropdown-item">
-              <i class="fa-solid fa-bed" style="width: 20px; color: var(--color-secondary-dark);"></i> Bed Frames
-            </NuxtLink>
-            <NuxtLink to="/shop?category=dining-table" class="dropdown-item">
-              <i class="fa-solid fa-utensils" style="width: 20px; color: var(--color-secondary-dark);"></i> Dining Sets
-            </NuxtLink>
+            <div class="dropdown-menu">
+              <NuxtLink
+                v-for="sub in item.children"
+                :key="sub.id"
+                :to="sub.url"
+                :target="sub.target || '_self'"
+                class="dropdown-item"
+              >
+                <i v-if="sub.icon" :class="sub.icon" style="width: 20px; color: var(--color-secondary-dark);"></i>
+                {{ sub.title }}
+                <span v-if="sub.badge" class="brand-badge" style="margin-left: 0.5rem; font-size: 0.6rem;">{{ sub.badge }}</span>
+              </NuxtLink>
+            </div>
           </div>
-        </div>
 
-        <NuxtLink to="/our-showroom" class="nav-link">
-          OUR SHOWROOM
-        </NuxtLink>
-
-        <NuxtLink to="/gallery" class="nav-link">
-          GALLERY
-        </NuxtLink>
-
-        <NuxtLink to="/track-order" class="nav-link">
-          TRACK ORDER
-        </NuxtLink>
+          <!-- Standard Link Item -->
+          <NuxtLink
+            v-else
+            :to="item.url"
+            :target="item.target || '_self'"
+            class="nav-link"
+          >
+            <i v-if="item.icon" :class="item.icon" style="margin-right: 0.35rem; font-size: 0.75rem;"></i>
+            {{ item.title }}
+            <span v-if="item.badge" class="brand-badge" style="margin-left: 0.35rem; font-size: 0.6rem;">{{ item.badge }}</span>
+          </NuxtLink>
+        </template>
       </div>
 
       <!-- Nav Actions -->
@@ -299,15 +297,50 @@
 import { useAuthStore } from '~/stores/auth'
 import { useCartStore } from '~/stores/cart'
 import { useWishlistStore } from '~/stores/wishlist'
+import { useSettingsStore } from '~/stores/settings'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
+const settingsStore = useSettingsStore()
 const config = useRuntimeConfig()
 const apiBase = config.public.apiBase
 const router = useRouter()
 
 const isMobileMenuOpen = ref(false)
+
+// Dynamic Website Settings Getters
+const siteName = computed(() => settingsStore.getSetting('site_name', 'NMF'))
+const siteTagline = computed(() => settingsStore.getSetting('site_tagline', 'FURNITURE'))
+const ssmNumber = computed(() => settingsStore.getSetting('ssm_number', 'SDN BHD'))
+const isAnnouncementActive = computed(() => settingsStore.isAnnouncementEnabled)
+const announcement1 = computed(() => settingsStore.getSetting('announcement_text_1', '5-Year Solid Wood Warranty on All Sofas'))
+const announcement2 = computed(() => settingsStore.getSetting('announcement_text_2', 'In-House Malaysian Manufacturer'))
+const announcementLinkText = computed(() => settingsStore.getSetting('announcement_link_text', 'Visit Showrooms in Shah Alam & PJ →'))
+const announcementLinkUrl = computed(() => settingsStore.getSetting('announcement_link_url', '/our-showroom'))
+
+const headerNavItems = computed(() => {
+  const items = settingsStore.getMenu('header_main')
+  if (items && items.length > 0) return items
+  return [
+    {
+      id: 1,
+      title: 'CATEGORY',
+      url: '/shop',
+      children: [
+        { id: 11, title: 'All Products', url: '/shop', icon: 'fa-solid fa-border-all' },
+        { id: 12, title: 'Sofas & Lounges', url: '/shop?category=sofa', icon: 'fa-solid fa-couch' },
+        { id: 13, title: 'Wing Chairs', url: '/shop?category=wing-chair', icon: 'fa-solid fa-chair' },
+        { id: 14, title: 'Coffee Tables', url: '/shop?category=coffee-table', icon: 'fa-solid fa-table' },
+        { id: 15, title: 'Bed Frames', url: '/shop?category=bed-frame', icon: 'fa-solid fa-bed' },
+        { id: 16, title: 'Dining Sets', url: '/shop?category=dining-table', icon: 'fa-solid fa-utensils' },
+      ]
+    },
+    { id: 2, title: 'OUR SHOWROOM', url: '/our-showroom' },
+    { id: 3, title: 'GALLERY', url: '/gallery' },
+    { id: 4, title: 'TRACK ORDER', url: '/track-order' },
+  ]
+})
 
 // Instant Search State
 const isSearchOpen = ref(false)

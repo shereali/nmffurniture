@@ -4,27 +4,30 @@
     <section class="hero-section">
       <div class="hero-bg-container">
         <img
-          src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1920&q=80"
+          :src="heroImageUrl"
           alt="Handcrafted luxury sofa living room"
           class="hero-bg-image"
+          fetchpriority="high"
+          loading="eager"
+          decoding="async"
         />
         <div class="hero-gradient-overlay"></div>
       </div>
 
       <div class="container hero-container">
         <div class="hero-content animate-fade-in">
-          <span class="hero-eyebrow">BUKIT JELUTONG WORKSHOP • IN-HOUSE MANUFACTURING</span>
-          <h1 class="hero-title">Bespoke Sofas & Handcrafted Living Furniture</h1>
+          <span class="hero-eyebrow">{{ heroEyebrow }}</span>
+          <h1 class="hero-title">{{ heroTitle }}</h1>
           <p class="hero-subtitle">
-            Engineered with reinforced kiln-dried solid hardwood frames, pocket spring suspension, and over 200+ pet-friendly, water-repellent designer fabrics.
+            {{ heroSubtitle }}
           </p>
           <div class="flex gap-4 items-center flex-wrap">
-            <NuxtLink to="/shop" class="btn btn-secondary btn-lg">
-              Explore Collections
+            <NuxtLink :to="heroBtnPrimaryLink" class="btn btn-secondary btn-lg">
+              {{ heroBtnPrimaryText }}
             </NuxtLink>
-            <NuxtLink to="/our-showroom" class="btn btn-glass btn-lg">
+            <NuxtLink :to="heroBtnSecondaryLink" class="btn btn-glass btn-lg">
               <i class="fa-solid fa-location-dot" style="color: var(--color-secondary);"></i>
-              Visit Our Showrooms
+              {{ heroBtnSecondaryText }}
             </NuxtLink>
           </div>
         </div>
@@ -418,11 +421,23 @@
 
 <script setup lang="ts">
 import ProductCard from '~/components/ProductCard.vue'
+import { useSettingsStore } from '~/stores/settings'
 
+const settingsStore = useSettingsStore()
 const config = useRuntimeConfig()
 const apiBase = config.public.apiBase
-const ssmNumber = config.public.ssmNumber
-const whatsappDefault = config.public.whatsappDefault
+const ssmNumber = computed(() => settingsStore.getSetting('ssm_number', config.public.ssmNumber || 'SSM 1400875-P'))
+const whatsappDefault = computed(() => settingsStore.getSetting('support_whatsapp', config.public.whatsappDefault || '60192589920'))
+
+// Dynamic Hero Settings
+const heroEyebrow = computed(() => settingsStore.getSetting('hero_eyebrow', 'BUKIT JELUTONG WORKSHOP • IN-HOUSE MANUFACTURING'))
+const heroTitle = computed(() => settingsStore.getSetting('hero_title', 'Bespoke Sofas & Handcrafted Living Furniture'))
+const heroSubtitle = computed(() => settingsStore.getSetting('hero_subtitle', 'Engineered with reinforced kiln-dried solid hardwood frames, pocket spring suspension, and over 200+ pet-friendly, water-repellent designer fabrics.'))
+const heroImageUrl = computed(() => settingsStore.getSetting('hero_image_url', 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1920&q=80'))
+const heroBtnPrimaryText = computed(() => settingsStore.getSetting('hero_btn_primary_text', 'Explore Collections'))
+const heroBtnPrimaryLink = computed(() => settingsStore.getSetting('hero_btn_primary_link', '/shop'))
+const heroBtnSecondaryText = computed(() => settingsStore.getSetting('hero_btn_secondary_text', 'Visit Our Showrooms'))
+const heroBtnSecondaryLink = computed(() => settingsStore.getSetting('hero_btn_secondary_link', '/our-showroom'))
 
 // 8 Category Cards for NMFFurniture collections
 const homeCategories = [
@@ -479,13 +494,21 @@ const customerReviews = [
   }
 ]
 
-const featuredProducts = ref<any[]>([])
+// High-Speed SSR Data Fetching (Zero Layout Shift)
+const { data: featuredData } = await useAsyncData('featured-products', () =>
+  $fetch(`${apiBase}/products/featured`).catch((e) => {
+    console.error('Featured products fetch error', e)
+    return { products: [] }
+  })
+)
+
+const featuredProducts = computed(() => (featuredData.value as any)?.products || [])
 
 const selectedSwatch = ref(sampleColors[0])
 
 const swatchWhatsappUrl = computed(() => {
   const text = `Hello NMFFurniture, I am interested in the ${selectedSwatch.value.name} fabric finish and would like to request your 200+ fabric swatch catalog.`
-  return `https://wa.me/${whatsappDefault}?text=${encodeURIComponent(text)}`
+  return `https://wa.me/${whatsappDefault.value}?text=${encodeURIComponent(text)}`
 })
 
 const showcaseSliderRef = ref<HTMLElement | null>(null)
@@ -509,10 +532,11 @@ useSeoMeta({
   twitterCard: 'summary_large_image',
 })
 
-// Structured Data (JSON-LD) for LocalBusiness / FurnitureStore
+// Structured Data (JSON-LD) for LocalBusiness / FurnitureStore & LCP Preload
 useHead({
   link: [
-    { rel: 'canonical', href: 'https://nmffurniture.com/' }
+    { rel: 'canonical', href: 'https://nmffurniture.com/' },
+    { rel: 'preload', as: 'image', href: heroImageUrl.value, fetchpriority: 'high' }
   ],
   script: [
     {
@@ -553,17 +577,6 @@ useHead({
       })
     }
   ]
-})
-
-onMounted(async () => {
-  try {
-    const res: any = await $fetch(`${apiBase}/products/featured`)
-    if (res.products) {
-      featuredProducts.value = res.products
-    }
-  } catch (e) {
-    console.error('Failed to load featured products from Laravel API', e)
-  }
 })
 </script>
 

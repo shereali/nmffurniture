@@ -6,8 +6,10 @@ use App\Http\Controllers\Api\Admin\AdminCustomerController;
 use App\Http\Controllers\Api\Admin\AdminExportController;
 use App\Http\Controllers\Api\Admin\AdminGalleryController;
 use App\Http\Controllers\Api\Admin\AdminInquiryController;
+use App\Http\Controllers\Api\Admin\AdminMenuController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Admin\AdminProductController;
+use App\Http\Controllers\Api\Admin\AdminSettingController;
 use App\Http\Controllers\Api\Admin\AdminShowroomController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 
@@ -19,6 +21,7 @@ use App\Http\Controllers\Api\InquiryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\ShowroomController;
 use Illuminate\Support\Facades\Route;
 
@@ -58,6 +61,10 @@ Route::post('/products/{productId}/reviews', [ReviewController::class, 'store'])
 // Public Order Track & Checkout
 Route::post('/orders', [OrderController::class, 'store']);
 Route::get('/orders/track/{orderNumber}', [OrderController::class, 'track']);
+
+// Dynamic Website Settings & Navigation Menus
+Route::get('/settings', [SettingController::class, 'index']);
+Route::get('/menus/{location}', [SettingController::class, 'getMenu']);
 
 /*
 |--------------------------------------------------------------------------
@@ -113,5 +120,16 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
     Route::get('/export/orders', [AdminExportController::class, 'exportOrders']);
     Route::get('/export/inquiries', [AdminExportController::class, 'exportInquiries']);
     Route::get('/export/customers', [AdminExportController::class, 'exportCustomers']);
+
+    // Website Settings Hub
+    Route::get('/settings', [AdminSettingController::class, 'index']);
+    Route::post('/settings/batch', [AdminSettingController::class, 'batchUpdate']);
+
+    // Navigation Menus Manager
+    Route::get('/menus', [AdminMenuController::class, 'index']);
+    Route::post('/menus/{id}/items', [AdminMenuController::class, 'storeItem']);
+    Route::put('/menus/items/{id}', [AdminMenuController::class, 'updateItem']);
+    Route::delete('/menus/items/{id}', [AdminMenuController::class, 'destroyItem']);
+    Route::post('/menus/{id}/reorder', [AdminMenuController::class, 'reorder']);
 });
 

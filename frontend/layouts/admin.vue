@@ -78,6 +78,11 @@
           <span>Promo Vouchers</span>
         </NuxtLink>
 
+        <NuxtLink to="/admin/settings" class="admin-nav-item" active-class="active" @click="closeMobile">
+          <i class="fa-solid fa-sliders" style="width: 20px;"></i>
+          <span>Website Settings</span>
+        </NuxtLink>
+
         <div style="height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.75rem 0;"></div>
 
         <NuxtLink to="/" class="admin-nav-item" style="color: var(--color-secondary);" target="_blank">

@@ -5,61 +5,64 @@
         <!-- Col 1: About & SSM -->
         <div class="footer-col">
           <h3 style="color: #FFFFFF; font-size: 1.5rem; margin-bottom: 0.75rem; letter-spacing: 0.05em;">
-            NMF <span style="color: var(--color-secondary);">FURNITURE</span>
+            {{ siteName }} <span style="color: var(--color-secondary);">{{ siteTagline }}</span>
           </h3>
           <p style="margin-bottom: 1rem;">
-            NMFFurniture Sdn Bhd is a leading in-house manufacturer of high-quality handcrafted sofas and bespoke living furniture in Malaysia. Every piece is built with a reinforced solid wood frame backed by our 5-Year Wood Warranty.
+            {{ footerAboutText }}
           </p>
           <div style="font-size: 0.85rem; color: #8E939A;">
             <strong>Registration:</strong> {{ ssmNumber }}
           </div>
         </div>
 
-        <!-- Col 2: Collections -->
+        <!-- Col 2: Collections (Dynamic Menu) -->
         <div class="footer-col">
           <h4>Collections</h4>
           <ul class="flex flex-col gap-2">
-            <li><NuxtLink to="/shop?category=sofa">Living Sofas</NuxtLink></li>
-            <li><NuxtLink to="/shop?category=wing-chair">Wing Chairs</NuxtLink></li>
-            <li><NuxtLink to="/shop?category=coffee-table">Coffee Tables</NuxtLink></li>
-            <li><NuxtLink to="/shop?category=bed-frame">Luxury Bedframes</NuxtLink></li>
-            <li><NuxtLink to="/shop?category=dining-table">Dining Sets</NuxtLink></li>
-            <li><NuxtLink to="/shop">View All Products</NuxtLink></li>
+            <li v-for="item in footerCol1Items" :key="item.id">
+              <NuxtLink :to="item.url" :target="item.target || '_self'">
+                <i v-if="item.icon" :class="item.icon" style="margin-right: 0.35rem; font-size: 0.8rem; color: var(--color-secondary-dark);"></i>
+                {{ item.title }}
+                <span v-if="item.badge" class="brand-badge" style="margin-left: 0.4rem; font-size: 0.6rem;">{{ item.badge }}</span>
+              </NuxtLink>
+            </li>
           </ul>
         </div>
 
-        <!-- Col 3: Experience -->
+        <!-- Col 3: Experience & Services (Dynamic Menu) -->
         <div class="footer-col">
           <h4>Experience</h4>
           <ul class="flex flex-col gap-2">
-            <li><NuxtLink to="/our-showroom">Showroom Locations</NuxtLink></li>
-            <li><NuxtLink to="/gallery">Project Lookbook</NuxtLink></li>
-            <li><NuxtLink to="/shop">Pet-Friendly Fabrics</NuxtLink></li>
-            <li><NuxtLink to="/track-order">Track Live Order</NuxtLink></li>
-            <li><NuxtLink to="/account/orders">Account & Past Orders</NuxtLink></li>
+            <li v-for="item in footerCol2Items" :key="item.id">
+              <NuxtLink :to="item.url" :target="item.target || '_self'">
+                <i v-if="item.icon" :class="item.icon" style="margin-right: 0.35rem; font-size: 0.8rem; color: var(--color-secondary-dark);"></i>
+                {{ item.title }}
+                <span v-if="item.badge" class="brand-badge" style="margin-left: 0.4rem; font-size: 0.6rem;">{{ item.badge }}</span>
+              </NuxtLink>
+            </li>
           </ul>
         </div>
 
         <!-- Col 4: Showroom & Direct Contact -->
         <div class="footer-col">
-          <h4>Shah Alam Showroom</h4>
+          <h4>{{ showroomTitle }}</h4>
           <p style="font-size: 0.875rem; margin-bottom: 0.65rem;">
-            2nd Floor, Lobby 3, UG41 Komersial Radia, Persiaran Arked, Bukit Jelutong, 40150 Shah Alam, Selangor.
+            {{ showroomAddress }}
           </p>
 
           <div class="footer-hours-badge">
             <i class="fa-regular fa-clock"></i>
-            <span>Tue – Sun: 10:30 AM – 7:30 PM</span>
+            <span>{{ showroomHours }}</span>
           </div>
 
           <div style="margin-top: 1rem;">
             <a
-              :href="`https://wa.me/${whatsappDefault}?text=Hye%20NMFFurniture%20BJ`"
+              :href="`https://wa.me/${footerWhatsapp}?text=Hye%20NMFFurniture%20BJ`"
               target="_blank"
               class="footer-whatsapp-btn"
             >
               <i class="fa-brands fa-whatsapp"></i>
-              <span>Chat with Showroom Concierge</span>
+              <span>{{ whatsappBtnText }}</span>
             </a>
           </div>
         </div>
@@ -67,10 +70,10 @@
 
       <div class="footer-bottom">
         <p style="margin-bottom: 0.35rem;">
-          © {{ new Date().getFullYear() }} NMFFURNITURE SDN. BHD. ({{ ssmNumber }}). All rights reserved.
+          © {{ new Date().getFullYear() }} {{ copyrightText }} ({{ ssmNumber }}).
         </p>
         <p style="font-size: 0.775rem; color: #6E737B; margin-bottom: 0;">
-          Handcrafted Luxury Sofas • Solid Wood Frame 5-Year Warranty • Made in Malaysia
+          {{ guaranteeBadge }}
         </p>
       </div>
     </div>
@@ -78,9 +81,48 @@
 </template>
 
 <script setup lang="ts">
+import { useSettingsStore } from '~/stores/settings'
+
+const settingsStore = useSettingsStore()
 const config = useRuntimeConfig()
-const ssmNumber = config.public.ssmNumber || 'SSM 1400875-P'
-const whatsappDefault = config.public.whatsappDefault || '60192589920'
+
+const siteName = computed(() => settingsStore.getSetting('site_name', 'NMF'))
+const siteTagline = computed(() => settingsStore.getSetting('site_tagline', 'FURNITURE'))
+const ssmNumber = computed(() => settingsStore.getSetting('ssm_number', config.public.ssmNumber || 'SSM 1400875-P'))
+const footerAboutText = computed(() => settingsStore.getSetting('footer_about_text', 'NMFFurniture Sdn Bhd is a leading in-house manufacturer of high-quality handcrafted sofas and bespoke living furniture in Malaysia. Every piece is built with a reinforced solid wood frame backed by our 5-Year Wood Warranty.'))
+
+const showroomTitle = computed(() => settingsStore.getSetting('footer_showroom_title', 'Shah Alam Showroom'))
+const showroomAddress = computed(() => settingsStore.getSetting('footer_showroom_address', '2nd Floor, Lobby 3, UG41 Komersial Radia, Persiaran Arked, Bukit Jelutong, 40150 Shah Alam, Selangor.'))
+const showroomHours = computed(() => settingsStore.getSetting('footer_showroom_hours', 'Tue – Sun: 10:30 AM – 7:30 PM'))
+const footerWhatsapp = computed(() => settingsStore.getSetting('support_whatsapp', config.public.whatsappDefault || '60192589920'))
+const whatsappBtnText = computed(() => settingsStore.getSetting('footer_whatsapp_btn_text', 'Chat with Showroom Concierge'))
+const copyrightText = computed(() => settingsStore.getSetting('footer_copyright_text', 'NMFFURNITURE SDN. BHD. All rights reserved.'))
+const guaranteeBadge = computed(() => settingsStore.getSetting('footer_guarantee_badge', 'Handcrafted Luxury Sofas • Solid Wood Frame 5-Year Warranty • Made in Malaysia'))
+
+const footerCol1Items = computed(() => {
+  const items = settingsStore.getMenu('footer_col_1')
+  if (items && items.length > 0) return items
+  return [
+    { id: 1, title: 'Living Sofas', url: '/shop?category=sofa' },
+    { id: 2, title: 'Wing Chairs', url: '/shop?category=wing-chair' },
+    { id: 3, title: 'Coffee Tables', url: '/shop?category=coffee-table' },
+    { id: 4, title: 'Luxury Bedframes', url: '/shop?category=bed-frame' },
+    { id: 5, title: 'Dining Sets', url: '/shop?category=dining-table' },
+    { id: 6, title: 'View All Products', url: '/shop' },
+  ]
+})
+
+const footerCol2Items = computed(() => {
+  const items = settingsStore.getMenu('footer_col_2')
+  if (items && items.length > 0) return items
+  return [
+    { id: 1, title: 'Showroom Locations', url: '/our-showroom' },
+    { id: 2, title: 'Project Lookbook', url: '/gallery' },
+    { id: 3, title: 'Pet-Friendly Fabrics', url: '/shop' },
+    { id: 4, title: 'Track Live Order', url: '/track-order' },
+    { id: 5, title: 'Account & Past Orders', url: '/account/orders' },
+  ]
+})
 </script>
 
 <style scoped>
