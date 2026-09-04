@@ -52,8 +52,18 @@
               <div style="font-size: 0.8rem; color: var(--color-text-light); margin-top: 0.4rem;">
                 Payment: <strong style="text-transform: uppercase;">{{ order.payment_status }}</strong>
               </div>
+              <div style="margin-top: 0.5rem;">
+                <button
+                  @click="isInvoiceOpen = true"
+                  class="btn btn-outline btn-sm"
+                  style="font-size: 0.75rem; padding: 0.25rem 0.6rem;"
+                >
+                  <i class="fa-solid fa-file-invoice"></i> Official Invoice
+                </button>
+              </div>
             </div>
           </div>
+
 
           <!-- 5-Step Visual Progress Bar -->
           <div style="margin: 2.5rem 0 1rem;">
@@ -203,10 +213,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Official Invoice & Packing Slip Modal -->
+    <InvoiceModal
+      v-if="isInvoiceOpen && order"
+      :order="order"
+      @close="isInvoiceOpen = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import InvoiceModal from '~/components/InvoiceModal.vue'
+
 const route = useRoute()
 const config = useRuntimeConfig()
 const apiBase = config.public.apiBase
@@ -216,6 +235,8 @@ const orderNumber = computed(() => route.params.orderNumber as string)
 const order = ref<any>(null)
 const loading = ref(true)
 const error = ref(false)
+const isInvoiceOpen = ref(false)
+
 
 const trackerSteps = [
   { title: 'Order Placed', icon: 'fa-solid fa-file-lines' },
