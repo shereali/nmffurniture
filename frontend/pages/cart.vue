@@ -131,9 +131,51 @@
 
           <div class="flex justify-between items-center" style="margin-bottom: 0.75rem; font-size: 0.95rem;">
             <span style="color: var(--color-text-muted);">Peninsular Shipping:</span>
-            <span style="font-weight: 600; color: cartStore.shippingFee === 0 ? 'var(--color-success)' : 'inherit';">
+            <span style="font-weight: 600;">
               {{ cartStore.shippingFee === 0 ? 'FREE' : `RM ${cartStore.shippingFee.toFixed(2)}` }}
             </span>
+          </div>
+
+          <!-- Promo Code Box -->
+          <div style="margin: 1.25rem 0; padding: 1rem; background: var(--color-bg-alt); border-radius: var(--radius-sm); border: 1px dashed var(--color-border);">
+            <div v-if="cartStore.appliedCoupon" class="flex justify-between items-center">
+              <div>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Promo Applied:</span>
+                <div style="font-weight: 700; color: #2E7D32; font-size: 0.9rem;">
+                  <i class="fa-solid fa-tag"></i> {{ cartStore.appliedCoupon.code }}
+                </div>
+              </div>
+              <button @click="cartStore.removeCoupon" class="btn btn-outline btn-sm" style="font-size: 0.75rem; color: var(--color-danger); border-color: var(--color-danger); padding: 0.2rem 0.5rem;">
+                Remove
+              </button>
+            </div>
+            <div v-else>
+              <label style="font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 0.35rem;">Promo Code / Voucher</label>
+              <div class="flex gap-2">
+                <input
+                  v-model="couponInput"
+                  type="text"
+                  placeholder="e.g. WELCOME100"
+                  class="form-input"
+                  style="text-transform: uppercase; font-size: 0.85rem;"
+                  @keyup.enter="applyCouponCode"
+                />
+                <button
+                  @click="applyCouponCode"
+                  :disabled="applyingCoupon"
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  style="white-space: nowrap;"
+                >
+                  {{ applyingCoupon ? '...' : 'Apply' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="cartStore.discountAmount > 0" class="flex justify-between items-center" style="margin-bottom: 0.75rem; font-size: 0.95rem; color: #2E7D32;">
+            <span>Promo Discount:</span>
+            <span style="font-weight: 700;">-RM {{ cartStore.discountAmount.toFixed(2) }}</span>
           </div>
 
           <div class="flex justify-between items-center" style="margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--color-border); margin-bottom: 1.5rem;">
@@ -160,6 +202,18 @@
 import { useCartStore } from '~/stores/cart'
 
 const cartStore = useCartStore()
+const couponInput = ref('')
+const applyingCoupon = ref(false)
+
+async function applyCouponCode() {
+  if (!couponInput.value.trim()) return
+  applyingCoupon.value = true
+  const ok = await cartStore.applyCoupon(couponInput.value)
+  applyingCoupon.value = false
+  if (ok) {
+    couponInput.value = ''
+  }
+}
 
 useSeoMeta({
   title: 'Your Shopping Bag | NMFFurniture Malaysia',

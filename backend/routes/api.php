@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\AdminCategoryController;
+use App\Http\Controllers\Api\Admin\AdminCouponController;
 use App\Http\Controllers\Api\Admin\AdminCustomerController;
 use App\Http\Controllers\Api\Admin\AdminGalleryController;
 use App\Http\Controllers\Api\Admin\AdminInquiryController;
@@ -10,10 +11,12 @@ use App\Http\Controllers\Api\Admin\AdminShowroomController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\InquiryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\ShowroomController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +45,13 @@ Route::get('/gallery', [GalleryController::class, 'index']);
 
 // Inquiries / Leads
 Route::post('/inquiries', [InquiryController::class, 'store']);
+
+// Coupons & Promotional Vouchers
+Route::post('/coupons/validate', [CouponController::class, 'validateCoupon']);
+
+// Product Reviews & Ratings
+Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
+Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
 
 // Public Order Track & Checkout
 Route::post('/orders', [OrderController::class, 'store']);
@@ -93,4 +103,7 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
     // Admin Showrooms
     Route::apiResource('/showrooms', AdminShowroomController::class);
+
+    // Admin Coupons
+    Route::apiResource('/coupons', AdminCouponController::class);
 });

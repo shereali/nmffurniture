@@ -11,9 +11,20 @@ export interface CartItem {
   quantity: number
 }
 
+export interface AppliedCoupon {
+  code: string
+  type: 'fixed' | 'percentage'
+  value: number
+  discountAmount: number
+}
+
 export const useCartStore = defineStore('cart', () => {
   const items = ref<CartItem[]>([])
   const isDrawerOpen = ref(false)
+  const appliedCoupon = ref<AppliedCoupon | null>(null)
+
+  const config = useRuntimeConfig()
+  const apiBase = config.public.apiBase
 
   const count = computed(() => items.value.reduce((acc, item) => acc + item.quantity, 0))
   
@@ -21,12 +32,19 @@ export const useCartStore = defineStore('cart', () => {
     return items.value.reduce((acc, item) => acc + (item.price * item.quantity), 0)
   })
 
+  const discountAmount = computed(() => {
+    if (!appliedCoupon.value) return 0
+    return appliedCoupon.value.discountAmount
+  })
+
   const shippingFee = computed(() => {
     if (subtotal.value === 0) return 0
     return subtotal.value >= 3000 ? 0 : 150
   })
 
-  const total = computed(() => subtotal.value + shippingFee.value)
+  const total = computed(() => {
+    return Math.max(0, subtotal.value - discountAmount.value) + shippingFee.value
+  })
 
   function init() {
     if (import.meta.client) {
@@ -38,13 +56,69 @@ export const useCartStore = defineStore('cart', () => {
           items.value = []
         }
       }
+
+      const savedCoupon = localStorage.getItem('nmf_applied_coupon')
+      if (savedCoupon) {
+        try {
+          appliedCoupon.value = JSON.parse(savedCoupon)
+        } catch (e) {
+          appliedCoupon.value = null
+        }
+      }
     }
   }
 
   function save() {
     if (import.meta.client) {
       localStorage.setItem('nmf_cart_items', JSON.stringify(items.value))
+      if (appliedCoupon.value) {
+        localStorage.setItem('nmf_applied_coupon', JSON.stringify(appliedCoupon.value))
+      } else {
+        localStorage.removeItem('nmf_applied_coupon')
+      }
     }
+  }
+
+  async function applyCoupon(code: string): Promise<boolean> {
+    const toast = useToastStore()
+    if (!code || !code.trim()) {
+      toast.show('Please enter a coupon code', 'error')
+      return false
+    }
+
+    try {
+      const res: any = await $fetch(`${apiBase}/coupons/validate`, {
+        method: 'POST',
+        body: {
+          code: code.trim(),
+          subtotal: subtotal.value,
+        }
+      })
+
+      if (res.valid) {
+        appliedCoupon.value = {
+          code: res.code,
+          type: res.type,
+          value: res.value,
+          discountAmount: res.discount_amount,
+        }
+        save()
+        toast.show(res.message || 'Coupon applied!', 'success')
+        return true
+      }
+      return false
+    } catch (err: any) {
+      const msg = err.data?.message || 'Invalid promo code'
+      toast.show(msg, 'error')
+      return false
+    }
+  }
+
+  function removeCoupon() {
+    appliedCoupon.value = null
+    save()
+    const toast = useToastStore()
+    toast.show('Coupon removed', 'info')
   }
 
   function addItem(product: any, variantOption?: string, quantity = 1) {
@@ -100,6 +174,7 @@ export const useCartStore = defineStore('cart', () => {
 
   function clearCart() {
     items.value = []
+    appliedCoupon.value = null
     save()
   }
 
@@ -110,8 +185,10 @@ export const useCartStore = defineStore('cart', () => {
   return {
     items,
     isDrawerOpen,
+    appliedCoupon,
     count,
     subtotal,
+    discountAmount,
     shippingFee,
     total,
     init,
@@ -120,5 +197,7 @@ export const useCartStore = defineStore('cart', () => {
     removeItem,
     clearCart,
     toggleDrawer,
+    applyCoupon,
+    removeCoupon,
   }
 })

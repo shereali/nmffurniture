@@ -35,8 +35,8 @@
             <li><NuxtLink to="/our-showroom">Showroom Locations</NuxtLink></li>
             <li><NuxtLink to="/gallery">Project Lookbook</NuxtLink></li>
             <li><NuxtLink to="/shop">Pet-Friendly Fabrics</NuxtLink></li>
-            <li><NuxtLink to="/our-showroom">Custom Color Palette</NuxtLink></li>
-            <li><NuxtLink to="/account/orders">Track My Order</NuxtLink></li>
+            <li><NuxtLink to="/track-order">Track Live Order</NuxtLink></li>
+            <li><NuxtLink to="/account/orders">Account & Past Orders</NuxtLink></li>
           </ul>
         </div>
 

@@ -27,6 +27,7 @@ class OrderController extends Controller
             'state' => ['required', 'string'],
             'postal_code' => ['required', 'string'],
             'payment_method' => ['required', 'string'],
+            'coupon_code' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'exists:products,id'],
@@ -56,8 +57,19 @@ class OrderController extends Controller
                 ];
             }
 
-            $shippingFee = $subtotal > 3000 ? 0.00 : 150.00; // Free shipping above RM 3000
-            $total = $subtotal + $shippingFee;
+            $discountAmount = 0.00;
+            if (! empty($validated['coupon_code'])) {
+                $coupon = \App\Models\Coupon::where('code', strtoupper(trim($validated['coupon_code'])))
+                    ->where('is_active', true)
+                    ->first();
+                if ($coupon) {
+                    $discountAmount = $coupon->calculateDiscount($subtotal);
+                    $coupon->increment('used_count');
+                }
+            }
+
+            $shippingFee = $subtotal >= 3000 ? 0.00 : 150.00; // Free shipping above RM 3000
+            $total = max(0, $subtotal - $discountAmount) + $shippingFee;
 
             $order = Order::create([
                 'user_id' => $user?->id,
@@ -74,7 +86,7 @@ class OrderController extends Controller
                 'order_status' => 'pending',
                 'subtotal' => $subtotal,
                 'shipping_fee' => $shippingFee,
-                'discount_amount' => 0.00,
+                'discount_amount' => $discountAmount,
                 'total' => $total,
                 'notes' => $validated['notes'] ?? null,
             ]);

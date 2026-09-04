@@ -164,6 +164,47 @@
             </span>
           </div>
 
+          <!-- Promo Code Box in Checkout -->
+          <div style="margin: 1rem 0; padding: 0.85rem; background: var(--color-bg-alt); border-radius: var(--radius-sm); border: 1px dashed var(--color-border);">
+            <div v-if="cartStore.appliedCoupon" class="flex justify-between items-center">
+              <div>
+                <span style="font-size: 0.75rem; color: var(--color-text-muted);">Promo Applied:</span>
+                <div style="font-weight: 700; color: #2E7D32; font-size: 0.85rem;">
+                  <i class="fa-solid fa-tag"></i> {{ cartStore.appliedCoupon.code }}
+                </div>
+              </div>
+              <button @click="cartStore.removeCoupon" type="button" class="btn btn-outline btn-sm" style="font-size: 0.75rem; color: var(--color-danger); border-color: var(--color-danger); padding: 0.2rem 0.5rem;">
+                Remove
+              </button>
+            </div>
+            <div v-else>
+              <div class="flex gap-2">
+                <input
+                  v-model="couponInput"
+                  type="text"
+                  placeholder="Promo code (e.g. WELCOME100)"
+                  class="form-input"
+                  style="text-transform: uppercase; font-size: 0.85rem;"
+                  @keyup.enter="applyCouponCode"
+                />
+                <button
+                  @click="applyCouponCode"
+                  :disabled="applyingCoupon"
+                  type="button"
+                  class="btn btn-primary btn-sm"
+                  style="white-space: nowrap;"
+                >
+                  {{ applyingCoupon ? '...' : 'Apply' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="cartStore.discountAmount > 0" class="flex justify-between items-center" style="margin-bottom: 0.6rem; font-size: 0.9rem; color: #2E7D32;">
+            <span>Discount ({{ cartStore.appliedCoupon?.code }}):</span>
+            <span style="font-weight: 700;">-RM {{ cartStore.discountAmount.toFixed(2) }}</span>
+          </div>
+
           <div class="flex justify-between items-center" style="margin: 1.25rem 0; padding-top: 1rem; border-top: 1px solid var(--color-border); font-size: 1.3rem; font-weight: 700;">
             <span>Total:</span>
             <span style="color: var(--color-primary); font-family: var(--font-sans);">
@@ -201,18 +242,42 @@ const toast = useToastStore()
 const submitting = ref(false)
 const orderCompleted = ref(false)
 const completedOrderNumber = ref('')
+const couponInput = ref('')
+const applyingCoupon = ref(false)
 
 const form = reactive({
-  customer_name: authStore.user?.name || '',
-  customer_email: authStore.user?.email || '',
-  customer_phone: authStore.user?.phone || '',
-  shipping_address: authStore.user?.address || '',
-  city: authStore.user?.city || 'Shah Alam',
-  state: authStore.user?.state || 'Selangor',
-  postal_code: authStore.user?.postal_code || '40150',
+  customer_name: '',
+  customer_email: '',
+  customer_phone: '',
+  shipping_address: '',
+  city: 'Shah Alam',
+  state: 'Selangor',
+  postal_code: '40150',
   payment_method: 'fpx_online_banking',
   notes: '',
 })
+
+onMounted(() => {
+  if (authStore.user) {
+    form.customer_name = authStore.user.name || ''
+    form.customer_email = authStore.user.email || ''
+    form.customer_phone = authStore.user.phone || ''
+    form.shipping_address = authStore.user.address || ''
+    form.city = authStore.user.city || 'Shah Alam'
+    form.state = authStore.user.state || 'Selangor'
+    form.postal_code = authStore.user.postal_code || '40150'
+  }
+})
+
+async function applyCouponCode() {
+  if (!couponInput.value.trim()) return
+  applyingCoupon.value = true
+  const ok = await cartStore.applyCoupon(couponInput.value)
+  applyingCoupon.value = false
+  if (ok) {
+    couponInput.value = ''
+  }
+}
 
 useSeoMeta({
   title: 'Secure Checkout & Delivery Details | NMFFurniture Malaysia',
@@ -226,6 +291,7 @@ async function placeOrder() {
   try {
     const payload = {
       ...form,
+      coupon_code: cartStore.appliedCoupon?.code || null,
       items: cartStore.items.map(it => ({
         product_id: it.productId,
         variant_option: it.variantOption,

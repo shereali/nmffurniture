@@ -452,5 +452,62 @@ class DatabaseSeeder extends Seeder
         foreach ($gallery as $g) {
             GalleryItem::create($g);
         }
+
+        // 6. Create Initial Promotional Coupons
+        \App\Models\Coupon::create([
+            'code' => 'WELCOME100',
+            'type' => 'fixed',
+            'value' => 100.00,
+            'min_spend' => 1000.00,
+            'usage_limit' => 500,
+            'is_active' => true,
+        ]);
+
+        \App\Models\Coupon::create([
+            'code' => 'NMF10',
+            'type' => 'percentage',
+            'value' => 10.00,
+            'min_spend' => 2000.00,
+            'max_discount' => 500.00,
+            'usage_limit' => 200,
+            'is_active' => true,
+        ]);
+
+        \App\Models\Coupon::create([
+            'code' => 'RAYA50',
+            'type' => 'fixed',
+            'value' => 50.00,
+            'min_spend' => 500.00,
+            'usage_limit' => 1000,
+            'is_active' => true,
+        ]);
+
+        // 7. Seed Verified Customer Reviews
+        $firstProduct = Product::first();
+        if ($firstProduct) {
+            \App\Models\Review::create([
+                'product_id' => $firstProduct->id,
+                'customer_name' => 'Datin Faridah Binti Hashim',
+                'customer_email' => 'faridah@example.com',
+                'rating' => 5,
+                'title' => 'Exceptional tailoring & 5-year solid frame warranty',
+                'comment' => 'We visited the Bukit Jelutong showroom and customized the English Modern Channel in champagne velvet. The delivery and installation crew were courteous and punctual. The frame feels exceptionally sturdy and the pocketed coils give supreme comfort.',
+                'image_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80',
+                'is_verified' => true,
+                'is_approved' => true,
+            ]);
+
+            \App\Models\Review::create([
+                'product_id' => $firstProduct->id,
+                'customer_name' => 'Keith Tan & Melissa',
+                'customer_email' => 'keith.tan@example.com',
+                'rating' => 5,
+                'title' => 'Pet-friendly fabric is a game changer!',
+                'comment' => 'We have two golden retrievers. Spills and muddy paw prints literally wipe clean with just a damp microfiber cloth as promised. Best Malaysian furniture investment we have made.',
+                'image_url' => 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80',
+                'is_verified' => true,
+                'is_approved' => true,
+            ]);
+        }
     }
 }

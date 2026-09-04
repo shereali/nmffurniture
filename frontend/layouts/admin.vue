@@ -73,6 +73,11 @@
           <span>Customer Directory</span>
         </NuxtLink>
 
+        <NuxtLink to="/admin/coupons" class="admin-nav-item" active-class="active" @click="closeMobile">
+          <i class="fa-solid fa-ticket" style="width: 20px;"></i>
+          <span>Promo Vouchers</span>
+        </NuxtLink>
+
         <div style="height: 1px; background: rgba(255, 255, 255, 0.1); margin: 0.75rem 0;"></div>
 
         <NuxtLink to="/" class="admin-nav-item" style="color: var(--color-secondary);" target="_blank">
