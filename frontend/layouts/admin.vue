@@ -58,6 +58,11 @@
           <span>Categories</span>
         </NuxtLink>
 
+        <NuxtLink to="/admin/settings?tab=menus" class="admin-nav-item" active-class="active" @click="closeMobile">
+          <i class="fa-solid fa-compass" style="width: 20px;"></i>
+          <span>Navigation Menus</span>
+        </NuxtLink>
+
         <NuxtLink to="/admin/gallery" class="admin-nav-item" active-class="active" @click="closeMobile">
           <i class="fa-solid fa-images" style="width: 20px;"></i>
           <span>Showcase Gallery</span>
@@ -71,6 +76,11 @@
         <NuxtLink to="/admin/customers" class="admin-nav-item" active-class="active" @click="closeMobile">
           <i class="fa-solid fa-users" style="width: 20px;"></i>
           <span>Customer Directory</span>
+        </NuxtLink>
+
+        <NuxtLink to="/admin/reviews" class="admin-nav-item" active-class="active" @click="closeMobile">
+          <i class="fa-solid fa-star" style="width: 20px;"></i>
+          <span>Customer Reviews</span>
         </NuxtLink>
 
         <NuxtLink to="/admin/coupons" class="admin-nav-item" active-class="active" @click="closeMobile">

@@ -508,7 +508,15 @@ const tabs = [
   { id: 'seo', label: 'SEO & Tracking', icon: 'fa-solid fa-chart-pie' },
 ]
 
-const currentTab = ref('general')
+const route = useRoute()
+const currentTab = ref((route.query.tab as string) || 'general')
+
+watch(() => route.query.tab, (tab) => {
+  if (tab && typeof tab === 'string') {
+    currentTab.value = tab
+  }
+})
+
 const isSaving = ref(false)
 const saveSuccessMessage = ref('')
 

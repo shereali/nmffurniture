@@ -41,7 +41,7 @@ class SettingController extends Controller
                     'id' => $m->id,
                     'title' => $m->title,
                     'location' => $m->location,
-                    'items' => $m->items,
+                    'items' => $m->items->toArray(),
                 ];
             }
 

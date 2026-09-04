@@ -21,22 +21,42 @@
       </NuxtLink>
 
       <!-- Dynamic Desktop Navigation Menu -->
-      <div class="nav-menu" style="display: flex;">
+      <div class="nav-menu">
         <template v-for="item in headerNavItems" :key="item.id">
           <!-- Dropdown Menu Item -->
-          <div v-if="item.children && item.children.length > 0" class="dropdown">
-            <NuxtLink :to="item.url" class="nav-link" :target="item.target || '_self'">
+          <div
+            v-if="item.children && item.children.length > 0"
+            class="dropdown"
+            :class="{ 'is-open': activeDropdown === item.id }"
+            @mouseenter="activeDropdown = item.id"
+            @mouseleave="activeDropdown = null"
+          >
+            <button
+              type="button"
+              class="nav-link dropdown-toggle"
+              @click.prevent="toggleDropdown(item.id)"
+              :aria-expanded="activeDropdown === item.id"
+              style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; text-transform: uppercase;"
+            >
               <i v-if="item.icon" :class="item.icon" style="margin-right: 0.35rem; font-size: 0.75rem;"></i>
               {{ item.title }}
-              <i class="fa-solid fa-chevron-down" style="font-size: 0.7rem; margin-left: 0.25rem;"></i>
-            </NuxtLink>
-            <div class="dropdown-menu">
+              <i
+                class="fa-solid fa-chevron-down"
+                style="font-size: 0.7rem; margin-left: 0.25rem; transition: transform 0.2s;"
+                :style="{ transform: activeDropdown === item.id ? 'rotate(180deg)' : 'none' }"
+              ></i>
+            </button>
+            <div
+              class="dropdown-menu"
+              :class="{ 'is-open': activeDropdown === item.id }"
+            >
               <NuxtLink
                 v-for="sub in item.children"
                 :key="sub.id"
                 :to="sub.url"
                 :target="sub.target || '_self'"
                 class="dropdown-item"
+                @click="activeDropdown = null"
               >
                 <i v-if="sub.icon" :class="sub.icon" style="width: 20px; color: var(--color-secondary-dark);"></i>
                 {{ sub.title }}
@@ -128,36 +148,89 @@
       </div>
     </nav>
 
-    <!-- Mobile Drawer Menu -->
+    <!-- Mobile Drawer Menu (Dynamic Navigation) -->
     <div
       v-if="isMobileMenuOpen"
       class="mobile-nav-panel animate-fade-in"
     >
-      <NuxtLink to="/shop" @click="isMobileMenuOpen = false" class="mobile-nav-link">
-        <i class="fa-solid fa-border-all" style="width: 22px; color: var(--color-secondary-dark);"></i> All Products
-      </NuxtLink>
-      <NuxtLink to="/shop?category=sofa" @click="isMobileMenuOpen = false" class="mobile-nav-link">
-        <i class="fa-solid fa-couch" style="width: 22px; color: var(--color-secondary-dark);"></i> Sofas & Sectionals
-      </NuxtLink>
-      <NuxtLink to="/shop?category=bed-frame" @click="isMobileMenuOpen = false" class="mobile-nav-link">
-        <i class="fa-solid fa-bed" style="width: 22px; color: var(--color-secondary-dark);"></i> Bed Frames
-      </NuxtLink>
-      <NuxtLink to="/shop?category=dining-table" @click="isMobileMenuOpen = false" class="mobile-nav-link">
-        <i class="fa-solid fa-utensils" style="width: 22px; color: var(--color-secondary-dark);"></i> Dining Sets
-      </NuxtLink>
+      <template v-for="item in headerNavItems" :key="item.id">
+        <!-- Expandable Submenu Item -->
+        <div v-if="item.children && item.children.length > 0" class="mobile-nav-group">
+          <button
+            type="button"
+            class="mobile-nav-link"
+            style="width: 100%; justify-content: space-between; background: transparent; border: none; cursor: pointer; border-bottom: 1px solid rgba(232, 228, 218, 0.5);"
+            @click="toggleMobileSubmenu(item.id)"
+          >
+            <span class="flex items-center gap-2">
+              <i v-if="item.icon" :class="item.icon" style="width: 22px; color: var(--color-secondary-dark);"></i>
+              {{ item.title }}
+              <span v-if="item.badge" class="brand-badge" style="font-size: 0.6rem;">{{ item.badge }}</span>
+            </span>
+            <i
+              class="fa-solid fa-chevron-down"
+              style="font-size: 0.75rem; transition: transform 0.2s;"
+              :style="{ transform: openMobileSubmenus.includes(item.id) ? 'rotate(180deg)' : 'none' }"
+            ></i>
+          </button>
+          <div
+            v-show="openMobileSubmenus.includes(item.id)"
+            class="mobile-submenu-list"
+            style="padding: 0.25rem 0 0.5rem 1.75rem; background: var(--color-bg-alt); border-radius: var(--radius-sm); margin: 0.25rem 0 0.5rem;"
+          >
+            <NuxtLink
+              v-for="sub in item.children"
+              :key="sub.id"
+              :to="sub.url"
+              :target="sub.target || '_self'"
+              class="mobile-nav-link"
+              style="font-size: 0.875rem; font-weight: 500; padding: 0.45rem 0;"
+              @click="isMobileMenuOpen = false"
+            >
+              <i v-if="sub.icon" :class="sub.icon" style="width: 20px; color: var(--color-secondary-dark);"></i>
+              {{ sub.title }}
+              <span v-if="sub.badge" class="brand-badge" style="margin-left: 0.4rem; font-size: 0.55rem;">{{ sub.badge }}</span>
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- Standard Link -->
+        <NuxtLink
+          v-else
+          :to="item.url"
+          :target="item.target || '_self'"
+          class="mobile-nav-link"
+          @click="isMobileMenuOpen = false"
+        >
+          <i v-if="item.icon" :class="item.icon" style="width: 22px; color: var(--color-secondary-dark);"></i>
+          {{ item.title }}
+          <span v-if="item.badge" class="brand-badge" style="margin-left: 0.5rem; font-size: 0.6rem;">{{ item.badge }}</span>
+        </NuxtLink>
+      </template>
+
+      <!-- Quick Actions in Mobile Drawer -->
+      <div style="height: 1px; background: var(--color-border); margin: 0.5rem 0;"></div>
       <NuxtLink to="/wishlist" @click="isMobileMenuOpen = false" class="mobile-nav-link">
         <i class="fa-solid fa-heart" style="width: 22px; color: #E11D48;"></i> Saved Wishlist ({{ wishlistStore.count }})
       </NuxtLink>
-      <NuxtLink to="/track-order" @click="isMobileMenuOpen = false" class="mobile-nav-link">
-        <i class="fa-solid fa-truck-fast" style="width: 22px; color: var(--color-secondary-dark);"></i> Track Delivery
-      </NuxtLink>
-      <NuxtLink to="/our-showroom" @click="isMobileMenuOpen = false" class="mobile-nav-link">
-        <i class="fa-solid fa-location-dot" style="width: 22px; color: var(--color-secondary-dark);"></i> Showrooms (Shah Alam & PJ)
-      </NuxtLink>
-      <NuxtLink to="/gallery" @click="isMobileMenuOpen = false" class="mobile-nav-link">
-        <i class="fa-solid fa-images" style="width: 22px; color: var(--color-secondary-dark);"></i> Project Lookbook
-      </NuxtLink>
+      <button
+        @click="cartStore.toggleDrawer(true); isMobileMenuOpen = false;"
+        class="mobile-nav-link"
+        style="background: transparent; border: none; cursor: pointer; width: 100%; text-align: left;"
+      >
+        <i class="fa-solid fa-bag-shopping" style="width: 22px; color: var(--color-secondary-dark);"></i> Shopping Bag ({{ cartStore.count }})
+      </button>
+      <a
+        :href="`https://wa.me/${whatsappNumber}?text=Hye%20NMFFurniture%20Concierge`"
+        target="_blank"
+        class="mobile-nav-link"
+        style="color: #25D366;"
+        @click="isMobileMenuOpen = false"
+      >
+        <i class="fa-brands fa-whatsapp" style="width: 22px; color: #25D366;"></i> WhatsApp Concierge
+      </a>
 
+      <!-- Auth Section in Mobile Drawer -->
       <div v-if="authStore.isAuthenticated" class="flex gap-2" style="margin-top: 0.75rem; border-top: 1px solid var(--color-border); padding-top: 1rem;">
         <NuxtLink v-if="authStore.isAdmin" to="/admin" @click="isMobileMenuOpen = false" class="btn btn-secondary btn-sm flex-1">Admin Panel</NuxtLink>
         <NuxtLink v-else to="/account/orders" @click="isMobileMenuOpen = false" class="btn btn-outline btn-sm flex-1">My Orders</NuxtLink>
@@ -410,10 +483,44 @@ function navigateToShopSearch() {
   }
 }
 
+// Dropdown state for desktop and touch
+const activeDropdown = ref<number | null>(null)
+function toggleDropdown(id: number) {
+  activeDropdown.value = activeDropdown.value === id ? null : id
+}
+
+// Mobile drawer accordion state
+const openMobileSubmenus = ref<number[]>([1]) // Default first category open
+function toggleMobileSubmenu(id: number) {
+  if (openMobileSubmenus.value.includes(id)) {
+    openMobileSubmenus.value = openMobileSubmenus.value.filter(itemId => itemId !== id)
+  } else {
+    openMobileSubmenus.value.push(id)
+  }
+}
+
+const whatsappNumber = computed(() => settingsStore.getSetting('support_whatsapp', '60192589920'))
+
+function handleDocumentClick(e: MouseEvent) {
+  const target = e.target as HTMLElement | null
+  if (target && !target.closest('.dropdown')) {
+    activeDropdown.value = null
+  }
+}
+
 onMounted(() => {
   authStore.init()
   cartStore.init()
   wishlistStore.init()
+  if (import.meta.client) {
+    document.addEventListener('click', handleDocumentClick)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (import.meta.client) {
+    document.removeEventListener('click', handleDocumentClick)
+  }
 })
 </script>
 
@@ -628,7 +735,23 @@ onMounted(() => {
   padding: 2.5rem 1rem;
 }
 
-@media (max-width: 860px) {
+.dropdown-menu.is-open {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 0;
+  right: 0;
+  height: 16px;
+}
+
+@media (max-width: 992px) {
   .nav-menu {
     display: none !important;
   }

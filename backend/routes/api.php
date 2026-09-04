@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Admin\AdminInquiryController;
 use App\Http\Controllers\Api\Admin\AdminMenuController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Admin\AdminProductController;
+use App\Http\Controllers\Api\Admin\AdminReviewController;
 use App\Http\Controllers\Api\Admin\AdminSettingController;
 use App\Http\Controllers\Api\Admin\AdminShowroomController;
 use App\Http\Controllers\Api\Admin\DashboardController;
@@ -115,6 +116,11 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
     // Admin Coupons
     Route::apiResource('/coupons', AdminCouponController::class);
+
+    // Admin Customer Reviews & Ratings
+    Route::get('/reviews', [AdminReviewController::class, 'index']);
+    Route::patch('/reviews/{id}/status', [AdminReviewController::class, 'updateStatus']);
+    Route::delete('/reviews/{id}', [AdminReviewController::class, 'destroy']);
 
     // Business Data CSV Exports
     Route::get('/export/orders', [AdminExportController::class, 'exportOrders']);

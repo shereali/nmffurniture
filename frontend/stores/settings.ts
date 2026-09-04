@@ -38,7 +38,7 @@ export const useSettingsStore = defineStore('settings', {
     },
 
     getMenu: (state) => (location: string): NavigationMenuItemData[] => {
-      if (state.menus && state.menus[location] && state.menus[location].items) {
+      if (state.menus && state.menus[location] && state.menus[location].items && Array.isArray(state.menus[location].items)) {
         return state.menus[location].items
       }
       return []
