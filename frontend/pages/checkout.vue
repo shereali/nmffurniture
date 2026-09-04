@@ -312,6 +312,18 @@ async function placeOrder() {
 
     completedOrderNumber.value = res.order.order_number
     orderCompleted.value = true
+
+    // Dispatch GA4 Purchase Event
+    const { $analytics } = useNuxtApp()
+    if ($analytics) {
+      $analytics.trackPurchase(
+        res.order.order_number,
+        Number(res.order.total),
+        cartStore.items,
+        cartStore.appliedCoupon?.code
+      )
+    }
+
     cartStore.clearCart()
     toast.show('Order placed successfully!', 'success')
   } catch (err: any) {
@@ -321,6 +333,7 @@ async function placeOrder() {
     submitting.value = false
   }
 }
+
 </script>
 
 <style scoped>

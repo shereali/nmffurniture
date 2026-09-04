@@ -3,12 +3,14 @@
 use App\Http\Controllers\Api\Admin\AdminCategoryController;
 use App\Http\Controllers\Api\Admin\AdminCouponController;
 use App\Http\Controllers\Api\Admin\AdminCustomerController;
+use App\Http\Controllers\Api\Admin\AdminExportController;
 use App\Http\Controllers\Api\Admin\AdminGalleryController;
 use App\Http\Controllers\Api\Admin\AdminInquiryController;
 use App\Http\Controllers\Api\Admin\AdminOrderController;
 use App\Http\Controllers\Api\Admin\AdminProductController;
 use App\Http\Controllers\Api\Admin\AdminShowroomController;
 use App\Http\Controllers\Api\Admin\DashboardController;
+
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CouponController;
@@ -106,4 +108,10 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
 
     // Admin Coupons
     Route::apiResource('/coupons', AdminCouponController::class);
+
+    // Business Data CSV Exports
+    Route::get('/export/orders', [AdminExportController::class, 'exportOrders']);
+    Route::get('/export/inquiries', [AdminExportController::class, 'exportInquiries']);
+    Route::get('/export/customers', [AdminExportController::class, 'exportCustomers']);
 });
+

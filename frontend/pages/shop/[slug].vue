@@ -705,6 +705,15 @@ async function loadProduct() {
 
     // Load reviews
     await loadReviews(product.value.id)
+
+    // Inject Google Rich Snippet JSON-LD & Dispatch GA4 View Item
+    const { injectProductSchema } = useSchemaOrg()
+    injectProductSchema(product.value, reviewData.value)
+
+    const { $analytics } = useNuxtApp()
+    if ($analytics) {
+      $analytics.trackViewItem(product.value)
+    }
   } catch (e) {
     console.error('Failed to load product', e)
   } finally {
@@ -736,7 +745,13 @@ function addToCart() {
   }
   const variantLabel = selectedVariant.value ? selectedVariant.value.option : undefined
   cartStore.addItem(finalProduct, variantLabel, quantity.value)
+
+  const { $analytics } = useNuxtApp()
+  if ($analytics) {
+    $analytics.trackAddToCart(finalProduct, variantLabel, quantity.value)
+  }
 }
+
 
 async function submitSwatchRequest() {
   isSubmittingSwatch.value = true

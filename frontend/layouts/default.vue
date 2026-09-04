@@ -7,6 +7,11 @@
     <AppFooter />
     <CartDrawer />
     <ToastNotification />
+
+    <!-- Customer Engagement & Acquisition Modules -->
+    <WelcomeOfferModal />
+    <ShowroomConcierge />
+    <SocialProofToast />
   </div>
 </template>
 
@@ -15,4 +20,15 @@ import AppHeader from '~/components/AppHeader.vue'
 import AppFooter from '~/components/AppFooter.vue'
 import CartDrawer from '~/components/CartDrawer.vue'
 import ToastNotification from '~/components/ToastNotification.vue'
+import WelcomeOfferModal from '~/components/WelcomeOfferModal.vue'
+import ShowroomConcierge from '~/components/ShowroomConcierge.vue'
+import SocialProofToast from '~/components/SocialProofToast.vue'
+import { useSchemaOrg } from '~/composables/useSchemaOrg'
+
+const { injectLocalBusinessSchema } = useSchemaOrg()
+
+onMounted(() => {
+  injectLocalBusinessSchema()
+})
 </script>
+
