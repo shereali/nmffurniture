@@ -22,7 +22,8 @@
             <NuxtLink to="/shop" class="btn btn-secondary btn-lg">
               Explore Collections
             </NuxtLink>
-            <NuxtLink to="/our-showroom" class="btn btn-outline btn-lg" style="background: rgba(255,255,255,0.92); border-color: transparent;">
+            <NuxtLink to="/our-showroom" class="btn btn-glass btn-lg">
+              <i class="fa-solid fa-location-dot" style="color: var(--color-secondary);"></i>
               Visit Our Showrooms
             </NuxtLink>
           </div>
@@ -132,8 +133,8 @@
             />
           </div>
           <div class="feature-split-content">
-            <span class="badge-wood-warranty">
-              <i class="fa-solid fa-shield-halved"></i> 5-YEAR SOLID WOOD WARRANTY
+            <span class="badge-pill badge-pill--gold">
+              <i class="fa-solid fa-shield-halved"></i> 5-Year Solid Wood Warranty
             </span>
             <h2>ENGINEERED FOR A LIFETIME OF COMFORT</h2>
             <p>
@@ -142,6 +143,22 @@
             <p>
               Beneath the upholstery, our dual-tier pocket-spring suspension system works alongside 45D high-resilience latex-infused foam to provide supportive, ergonomic posture that preserves its shape year after year.
             </p>
+
+            <div class="craft-specs-grid">
+              <div class="craft-spec-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>100% Kiln-Dried Meranti Hardwood (Zero Warping)</span>
+              </div>
+              <div class="craft-spec-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Pocket Spring Suspension & 45D Latex Foam</span>
+              </div>
+              <div class="craft-spec-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>Master Mortise & Tenon Structural Joinery</span>
+              </div>
+            </div>
+
             <div style="margin-top: 2rem;">
               <NuxtLink to="/our-showroom" class="btn btn-outline">
                 Visit Showroom to Test Cushion Firmness →
@@ -157,8 +174,8 @@
       <div class="container">
         <div class="feature-split reverse">
           <div class="feature-split-content">
-            <span class="badge-wood-warranty" style="background-color: #EDF7F1; color: #2A7B4C; border-color: rgba(42, 123, 76, 0.2);">
-              <i class="fa-solid fa-paw"></i> PET-FRIENDLY & WATER-REPELLENT
+            <span class="badge-pill badge-pill--emerald">
+              <i class="fa-solid fa-paw"></i> Pet-Friendly & Water-Repellent
             </span>
             <h2>OVER 200+ DESIGNER TEXTURES & COLOURS</h2>
             <p>
@@ -169,26 +186,41 @@
             </p>
 
             <!-- Interactive Palette Swatches -->
-            <div style="margin: 1.5rem 0 2rem;">
-              <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-primary); margin-bottom: 0.75rem;">
-                Featured Designer Shades:
+            <div class="fabric-interactive-box">
+              <div class="flex items-center justify-between" style="margin-bottom: 0.75rem;">
+                <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-primary);">
+                  Featured Designer Palette:
+                </div>
+                <div class="active-swatch-pill">
+                  <span class="active-swatch-dot" :style="{ backgroundColor: selectedSwatch.code }"></span>
+                  <span class="active-swatch-name">{{ selectedSwatch.name }}</span>
+                </div>
               </div>
+
               <div class="swatch-group">
-                <span
+                <button
                   v-for="(c, i) in sampleColors"
                   :key="i"
+                  type="button"
                   class="swatch-item"
+                  :class="{ active: selectedSwatch.name === c.name }"
                   :style="{ backgroundColor: c.code }"
                   :title="c.name"
-                ></span>
+                  @click="selectedSwatch = c"
+                  @mouseenter="selectedSwatch = c"
+                  :aria-label="`Select ${c.name} fabric finish`"
+                ></button>
               </div>
-              <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 0.5rem;">
-                Hover over swatches to view finish names
+
+              <div class="fabric-trust-notes">
+                <span><i class="fa-solid fa-shield-cat"></i> Pet Claw Resistant</span>
+                <span><i class="fa-solid fa-droplet-slash"></i> Liquid Repellent</span>
+                <span><i class="fa-solid fa-sparkles"></i> High Martindale Rub Count</span>
               </div>
             </div>
 
             <a
-              :href="`https://wa.me/${whatsappDefault}?text=Hello%20NMFFurniture,%20I%20would%20like%20to%20request%20your%20200+%20fabric%20swatch%20catalog.`"
+              :href="swatchWhatsappUrl"
               target="_blank"
               class="btn btn-whatsapp"
             >
@@ -218,8 +250,8 @@
             />
           </div>
           <div class="feature-split-content">
-            <span class="badge-wood-warranty" style="background-color: rgba(181, 149, 109, 0.2); color: var(--color-secondary); border-color: rgba(181, 149, 109, 0.4);">
-              <i class="fa-solid fa-hammer"></i> FACTORY DIRECT • BUKIT JELUTONG
+            <span class="badge-pill badge-pill--dark">
+              <i class="fa-solid fa-industry"></i> Factory Direct • Bukit Jelutong
             </span>
             <h2 style="color: #FFFFFF;">HANDCRAFTED WITHOUT MIDDLEMAN MARKUPS</h2>
             <p style="color: #D6D8DC;">
@@ -228,11 +260,27 @@
             <p style="color: #D6D8DC;">
               Need custom length to fit an exact living room alcove or specific cushion density? Our master craftsmen can customize dimensions for your home layout.
             </p>
+
+            <div class="workshop-badges">
+              <div class="workshop-badge-item">
+                <i class="fa-solid fa-ruler-combined"></i>
+                <span>Custom Dimensions Tailored to Floorplan</span>
+              </div>
+              <div class="workshop-badge-item">
+                <i class="fa-solid fa-couch"></i>
+                <span>3 Firmness Options (Plush / Balanced / Firm)</span>
+              </div>
+              <div class="workshop-badge-item">
+                <i class="fa-solid fa-truck-fast"></i>
+                <span>White-Glove Delivery & Installation</span>
+              </div>
+            </div>
+
             <div class="flex gap-4 flex-wrap" style="margin-top: 2rem;">
               <NuxtLink to="/shop" class="btn btn-secondary">
                 Explore Catalog
               </NuxtLink>
-              <NuxtLink to="/gallery" class="btn btn-outline" style="border-color: rgba(255,255,255,0.6); color: #FFFFFF;">
+              <NuxtLink to="/gallery" class="btn btn-outline-white">
                 View Workshop Gallery
               </NuxtLink>
             </div>
@@ -244,19 +292,44 @@
     <!-- REAL RESIDENTIAL INSTALLATIONS GALLERY -->
     <section class="py-20" style="background-color: #FFFFFF;">
       <div class="container">
-        <div class="section-title">
-          <span class="section-eyebrow">LOOKBOOK & INSPIRATION</span>
-          <h2>REAL LIVING ROOM INSTALLATIONS</h2>
-          <p>A glimpse into recent custom sofa setups and interior projects across Malaysia.</p>
+        <div class="section-title-with-nav">
+          <div class="section-title text-left" style="margin-bottom: 0; text-align: left;">
+            <span class="section-eyebrow">LOOKBOOK & INSPIRATION</span>
+            <h2>REAL LIVING ROOM INSTALLATIONS</h2>
+            <p style="margin: 0;">A glimpse into recent custom sofa setups and interior projects across Malaysia.</p>
+          </div>
+          <div class="slider-nav-btns">
+            <button
+              @click="scrollShowcase('left')"
+              class="slider-btn"
+              type="button"
+              aria-label="Previous installations"
+            >
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button
+              @click="scrollShowcase('right')"
+              class="slider-btn"
+              type="button"
+              aria-label="Next installations"
+            >
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="showcase-slider">
+        <div ref="showcaseSliderRef" class="showcase-slider">
           <div v-for="(img, idx) in galleryImages" :key="idx" class="showcase-slide">
-            <img :src="img.url" :alt="img.title" loading="lazy" />
-            <div style="padding: 1.25rem 1rem; background: #FFFFFF; border-top: 1px solid var(--color-border);">
-              <div style="font-size: 0.9rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.2rem;">{{ img.title }}</div>
-              <div style="font-size: 0.78rem; color: var(--color-text-muted);">
-                <i class="fa-solid fa-location-dot" style="color: var(--color-secondary-dark); margin-right: 0.3rem;"></i>
+            <div class="showcase-slide-media">
+              <img :src="img.url" :alt="img.title" loading="lazy" />
+              <span class="showcase-verified-tag">
+                <i class="fa-solid fa-circle-check"></i> Verified Setup
+              </span>
+            </div>
+            <div class="showcase-slide-caption">
+              <div class="showcase-slide-title">{{ img.title }}</div>
+              <div class="showcase-slide-desc">
+                <i class="fa-solid fa-location-dot"></i>
                 {{ img.desc }}
               </div>
             </div>
@@ -271,7 +344,7 @@
       </div>
     </section>
 
-    <!-- AUTHENTIC CLIENT REVIEWS (Replacing AI Fake Celebrities) -->
+    <!-- AUTHENTIC CLIENT REVIEWS -->
     <section class="py-20" style="background-color: var(--color-bg-alt); border-top: 1px solid var(--color-border);">
       <div class="container">
         <div class="section-title">
@@ -282,15 +355,23 @@
 
         <div class="grid grid-cols-3 gap-6">
           <div v-for="(rev, rIdx) in customerReviews" :key="rIdx" class="review-card">
-            <div class="review-stars">
-              <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
+            <div class="flex items-center justify-between" style="margin-bottom: 1rem;">
+              <div class="review-stars">
+                <i v-for="s in 5" :key="s" class="fa-solid fa-star"></i>
+              </div>
+              <span class="verified-badge">
+                <i class="fa-solid fa-circle-check"></i> Verified Homeowner
+              </span>
             </div>
             <p class="review-quote">"{{ rev.quote }}"</p>
             <div class="review-author">
               <div class="review-avatar">{{ rev.initials }}</div>
               <div class="review-meta">
                 <div class="review-name">{{ rev.name }}</div>
-                <div class="review-location">{{ rev.location }} • {{ rev.product }}</div>
+                <div class="review-location">
+                  <i class="fa-solid fa-location-dot" style="color: var(--color-secondary-dark); margin-right: 0.25rem;"></i>
+                  {{ rev.location }} • <span style="font-weight: 600; color: var(--color-primary);">{{ rev.product }}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -298,15 +379,38 @@
       </div>
     </section>
 
-    <!-- SSM Registration Footer Band -->
-    <section style="padding: 2rem 1.5rem; text-align: center; background: #FFFFFF; border-top: 1px solid var(--color-border);">
+    <!-- Official Manufacturer Trust Seal Bar -->
+    <section class="trust-seal-bar">
       <div class="container">
-        <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--color-primary); letter-spacing: 0.06em; margin-bottom: 0.25rem;">
-          NMFFURNITURE SDN. BHD.
-        </h4>
-        <p style="font-size: 0.825rem; color: var(--color-text-muted); margin-bottom: 0;">
-          {{ ssmNumber }} • Official Registered In-House Furniture Manufacturer • Shah Alam, Selangor
-        </p>
+        <div class="trust-seal-grid">
+          <div class="trust-seal-item">
+            <div class="trust-seal-icon">
+              <i class="fa-solid fa-award"></i>
+            </div>
+            <div>
+              <strong>NMFFURNITURE SDN. BHD.</strong>
+              <span>SSM No: {{ ssmNumber }} • Registered In-House Manufacturer</span>
+            </div>
+          </div>
+          <div class="trust-seal-item">
+            <div class="trust-seal-icon">
+              <i class="fa-solid fa-tree"></i>
+            </div>
+            <div>
+              <strong>100% Solid Meranti Wood</strong>
+              <span>5-Year Structural Frame Warranty Guaranteed</span>
+            </div>
+          </div>
+          <div class="trust-seal-item">
+            <div class="trust-seal-icon">
+              <i class="fa-solid fa-warehouse"></i>
+            </div>
+            <div>
+              <strong>Direct Workshop & Showrooms</strong>
+              <span>Shah Alam & Bukit Jelutong, Selangor</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -376,6 +480,24 @@ const customerReviews = [
 ]
 
 const featuredProducts = ref<any[]>([])
+
+const selectedSwatch = ref(sampleColors[0])
+
+const swatchWhatsappUrl = computed(() => {
+  const text = `Hello NMFFurniture, I am interested in the ${selectedSwatch.value.name} fabric finish and would like to request your 200+ fabric swatch catalog.`
+  return `https://wa.me/${whatsappDefault}?text=${encodeURIComponent(text)}`
+})
+
+const showcaseSliderRef = ref<HTMLElement | null>(null)
+
+const scrollShowcase = (direction: 'left' | 'right') => {
+  if (!showcaseSliderRef.value) return
+  const scrollAmount = 400
+  showcaseSliderRef.value.scrollBy({
+    left: direction === 'left' ? -scrollAmount : scrollAmount,
+    behavior: 'smooth'
+  })
+}
 
 // SEO Optimization & Metadata
 useSeoMeta({
@@ -580,6 +702,263 @@ onMounted(async () => {
 
 .category-card-link:hover {
   color: var(--color-primary);
+}
+
+/* Craftsmanship Specs Checklist */
+.craft-specs-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.craft-spec-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.craft-spec-item i {
+  color: #15803D;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* Fabric Interactive Box */
+.fabric-interactive-box {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 1.4rem;
+  margin: 1.75rem 0 2rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.active-swatch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--radius-full);
+}
+
+.active-swatch-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.active-swatch-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.fabric-trust-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed var(--color-border);
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+}
+
+.fabric-trust-notes span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.fabric-trust-notes i {
+  color: var(--color-secondary-dark);
+}
+
+/* Workshop Badges */
+.workshop-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.workshop-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  color: #F3E8DC;
+}
+
+.workshop-badge-item i {
+  color: var(--color-secondary);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+/* Section Title With Navigation for Lookbook Slider */
+.section-title-with-nav {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.slider-nav-btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.slider-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: #FFFFFF;
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.slider-btn:hover {
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+/* Showcase slide enhancements */
+.showcase-slide-media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background-color: var(--color-bg-muted);
+}
+
+.showcase-slide-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.showcase-slide:hover .showcase-slide-media img {
+  transform: scale(1.04);
+}
+
+.showcase-verified-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(22, 23, 25, 0.85);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.showcase-verified-tag i {
+  color: #4ADE80;
+}
+
+.showcase-slide-caption {
+  padding: 1.25rem 1rem;
+  background: #FFFFFF;
+  border-top: 1px solid var(--color-border);
+}
+
+.showcase-slide-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+.showcase-slide-desc {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.showcase-slide-desc i {
+  color: var(--color-secondary-dark);
+}
+
+/* Official Manufacturer Trust Seal Bar */
+.trust-seal-bar {
+  padding: 2.5rem 1.5rem;
+  background: #FFFFFF;
+  border-top: 1px solid var(--color-border);
+}
+
+.trust-seal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.trust-seal-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.trust-seal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-alt);
+  border: 1px solid var(--color-border);
+  color: var(--color-secondary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.trust-seal-item strong {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 0.02em;
+}
+
+.trust-seal-item span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 900px) {
+  .trust-seal-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
 }
 
 @media (max-width: 992px) {

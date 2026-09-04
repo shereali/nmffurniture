@@ -275,6 +275,36 @@
   color: #FFFFFF;
 }
 
+.btn-glass {
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.btn-glass:hover {
+  background: #FFFFFF;
+  color: var(--color-primary);
+  border-color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+  transform: translateY(-2px);
+}
+
+.btn-outline-white {
+  background-color: transparent;
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
+
+.btn-outline-white:hover {
+  background-color: #FFFFFF;
+  color: var(--color-primary);
+  border-color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
 .btn-sm {
   padding: 0.45rem 1.1rem;
   font-size: 0.78rem;
@@ -475,6 +505,53 @@
   text-transform: uppercase;
   margin-bottom: 1rem;
   border: 1px solid rgba(181, 149, 109, 0.25);
+}
+
+/* Standardized Semantic Badge System */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: var(--radius-full);
+  font-weight: 700;
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  border: 1px solid transparent;
+}
+
+.badge-pill--gold {
+  background-color: #FAF4EB;
+  color: var(--color-secondary-dark);
+  border-color: rgba(181, 149, 109, 0.35);
+}
+
+.badge-pill--emerald {
+  background-color: #EDF7F1;
+  color: #206E41;
+  border-color: rgba(32, 110, 65, 0.25);
+}
+
+.badge-pill--dark {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #F8F6F0;
+  border-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #15803D;
+  background-color: #F0FDF4;
+  border: 1px solid #BBF7D0;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
 }
 
 /* Color Swatches Grid */
