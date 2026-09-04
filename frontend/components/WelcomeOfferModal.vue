@@ -27,9 +27,9 @@
             Plus receive complimentary physical fabric and velvet swatches mailed to your doorstep anywhere in Peninsular Malaysia.
           </p>
 
-          <form @submit.prevent="claimOffer" class="flex flex-col gap-3">
-            <div>
-              <label class="form-label" style="font-size: 0.8rem;">Full Name *</label>
+          <form @submit.prevent="claimOffer" class="welcome-form">
+            <div class="form-group">
+              <label class="form-label">Full Name *</label>
               <input
                 type="text"
                 v-model="form.name"
@@ -39,8 +39,8 @@
               />
             </div>
 
-            <div>
-              <label class="form-label" style="font-size: 0.8rem;">WhatsApp / Mobile Number *</label>
+            <div class="form-group">
+              <label class="form-label">WhatsApp / Mobile Number *</label>
               <input
                 type="tel"
                 v-model="form.phone"
@@ -50,8 +50,8 @@
               />
             </div>
 
-            <div>
-              <label class="form-label" style="font-size: 0.8rem;">Email Address (For Instant Voucher Copy)</label>
+            <div class="form-group">
+              <label class="form-label">Email Address (For Instant Voucher Copy)</label>
               <input
                 type="email"
                 v-model="form.email"
@@ -62,8 +62,7 @@
 
             <button
               type="submit"
-              class="btn btn-primary"
-              style="margin-top: 0.5rem; padding: 0.85rem;"
+              class="btn btn-primary btn-claim"
               :disabled="loading"
             >
               <i v-if="loading" class="fa-solid fa-spinner fa-spin"></i>
@@ -71,10 +70,11 @@
             </button>
 
             <div class="offer-guarantee">
-              <i class="fa-solid fa-shield-check" style="color: #2E7D32;"></i>
+              <i class="fa-solid fa-shield-halved" style="color: #2E7D32;"></i>
               <span>Coupon code <strong>WELCOME100</strong> will be automatically applied to your bag.</span>
             </div>
           </form>
+
         </div>
       </div>
     </div>
@@ -283,13 +283,69 @@ onMounted(() => {
   margin-bottom: 1.25rem;
 }
 
+.welcome-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.form-group {
+  width: 100%;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.form-control {
+  width: 100% !important;
+  display: block;
+  padding: 0.75rem 1rem !important;
+  border: 1.5px solid #CBD5E1 !important;
+  border-radius: var(--radius-sm) !important;
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+  font-family: var(--font-sans) !important;
+  font-size: 0.92rem !important;
+  box-sizing: border-box !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.form-control:focus {
+  background-color: #FFFFFF !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px rgba(22, 23, 25, 0.1) !important;
+}
+
+.form-control::placeholder {
+  color: #94A3B8;
+  font-size: 0.88rem;
+}
+
+.btn-claim {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-top: 0.25rem;
+}
+
 .offer-guarantee {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   font-size: 0.75rem;
   color: var(--color-text-muted);
-  margin-top: 0.35rem;
+  margin-top: 0.25rem;
+  line-height: 1.4;
 }
 
 @media (max-width: 768px) {
@@ -301,3 +357,4 @@ onMounted(() => {
   }
 }
 </style>
+
