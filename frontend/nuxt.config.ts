@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   srcDir: '.',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   modules: [
     '@pinia/nuxt',
@@ -15,9 +15,13 @@ export default defineNuxtConfig({
     '~/assets/css/admin.css',
   ],
 
+  routeRules: {
+    '/api/**': { proxy: process.env.NUXT_BACKEND_PROXY || 'http://backend:8000/api/**' },
+  },
+
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8001/api',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
       siteName: 'NMFFurniture | Handcrafted Luxury Sofas & Living in Malaysia',
       ssmNumber: 'SSM 1400875-P',
       whatsappDefault: '60192589920',
@@ -39,14 +43,12 @@ export default defineNuxtConfig({
         { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
         { name: 'description', content: 'NMFFurniture Sdn Bhd - Leading in-house sofa & luxury living manufacturer in Malaysia. 5-Year Solid Wood Warranty, 200+ pet-friendly fabrics, bespoke sizing & direct factory pricing in Shah Alam & PJ.' },
         { name: 'keywords', content: 'sofa malaysia, custom sofa shah alam, pet friendly fabric sofa, solid wood sofa warranty, handcrafted furniture bukit jelutong, luxury furniture kuala lumpur, factory direct sofa malaysia' },
-        // Open Graph / Facebook
         { property: 'og:site_name', content: 'NMFFurniture Malaysia' },
         { property: 'og:type', content: 'website' },
         { property: 'og:locale', content: 'en_MY' },
         { property: 'og:title', content: 'NMFFurniture | Handcrafted Modern Sofas & Living Furniture' },
         { property: 'og:description', content: 'Leading Malaysian in-house manufacturer of luxury living furniture. 5-Year Solid Wood Warranty & 200+ pet-friendly fabrics.' },
         { property: 'og:image', content: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80' },
-        // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: 'NMFFurniture | Handcrafted Sofas & Living Furniture Malaysia' },
         { name: 'twitter:description', content: 'Factory-direct handcrafted sofas with 5-Year Solid Hardwood Warranty & 200+ pet-friendly fabrics.' },

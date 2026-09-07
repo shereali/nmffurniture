@@ -1,0 +1,94 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: nmffurniture-frontend-1
+    restart: unless-stopped
+    environment:
+      NUXT_PUBLIC_API_BASE: /api
+      NUXT_API_BASE_SERVER: http://backend:8000/api
+    depends_on:
+      backend:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    ports:
+      - "127.0.0.1:3001:3000"
+    networks:
+      - default
+      - caddy_net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nmffurniture-backend-1
+    restart: unless-stopped
+    environment:
+      APP_NAME: NMFFurniture
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY}
+      APP_URL: https://nmffurniture.com
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: nmffurniture
+      DB_USERNAME: nmffurniture_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@nmffurniture.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      MAIL_MAILER: ${MAIL_MAILER:-log}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-contact@nmffurniture.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-NMFFurniture}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/up"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    volumes:
+      - backend-storage:/var/www/html/storage
+    ports:
+      - "127.0.0.1:8001:8000"
+    networks:
+      - default
+      - caddy_net
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8
+    container_name: nmffurniture-db-1
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: nmffurniture
+      MYSQL_USER: nmffurniture_user
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - default
+
+volumes:
+  backend-storage:
+  db-data:
+
+networks:
+  default:
+    name: nmffurniture_default
+  caddy_net:
+    external: true
