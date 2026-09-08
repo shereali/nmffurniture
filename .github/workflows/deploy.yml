@@ -16,27 +16,62 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up SSH key
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.VPS_SSH_KEY }}" | tr -d '[:space:]' | base64 -d > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+          chmod 700 ~/.ssh
+
+          # Support both raw private key (PEM / OpenSSH) and base64-encoded key
+          if echo "$SSH_KEY" | grep -q -- "-----BEGIN"; then
+            printf "%s\n" "$SSH_KEY" > ~/.ssh/deploy_key
+          else
+            echo "$SSH_KEY" | tr -d '\r ' | base64 -d > ~/.ssh/deploy_key
+          fi
+
+          chmod 600 ~/.ssh/deploy_key
+
+          # Ensure key ends with a newline
+          sed -i -e '$a\' ~/.ssh/deploy_key 2>/dev/null || true
+
+          # Validate key syntax early with clear error feedback
+          ssh-keygen -y -f ~/.ssh/deploy_key >/dev/null || {
+            echo "::error::SSH key is invalid or corrupted. Check secrets.VPS_SSH_KEY format."
+            exit 1
+          }
+
+          PORT="${SSH_PORT:-22}"
+          ssh-keyscan -p "$PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Start deploy (detached on server)
+        env:
+          SSH_USER: ${{ secrets.VPS_USER }}
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
+          PORT="${SSH_PORT:-22}"
+          ssh -i ~/.ssh/deploy_key \
+              -p "$PORT" \
               -o StrictHostKeyChecking=accept-new \
               -o ConnectTimeout=20 \
               -o BatchMode=yes \
-              "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+              "$SSH_USER@$SSH_HOST" \
               "rm -f /var/log/nmffurniture/deploy.done; setsid nohup bash /var/www/nmffurniture/deploy/deploy.sh </dev/null >/dev/null 2>&1 & echo started; exit 0"
 
       - name: Wait for deploy to finish
+        env:
+          SSH_USER: ${{ secrets.VPS_USER }}
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
+          PORT="${SSH_PORT:-22}"
           for i in $(seq 1 60); do
-            RESULT=$(ssh -i ~/.ssh/id_ed25519 \
+            RESULT=$(ssh -i ~/.ssh/deploy_key \
+                -p "$PORT" \
                 -o StrictHostKeyChecking=accept-new \
-                "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+                "$SSH_USER@$SSH_HOST" \
                 "cat /var/log/nmffurniture/deploy.done 2>/dev/null || echo WAITING")
             if [ "$RESULT" = "done" ]; then
               echo "Deploy finished."
@@ -50,8 +85,14 @@ jobs:
           done
 
       - name: Show deploy result
+        env:
+          SSH_USER: ${{ secrets.VPS_USER }}
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
+          PORT="${SSH_PORT:-22}"
+          ssh -i ~/.ssh/deploy_key \
+              -p "$PORT" \
               -o StrictHostKeyChecking=accept-new \
-              "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+              "$SSH_USER@$SSH_HOST" \
               "cat /var/log/nmffurniture/deploy.status"
