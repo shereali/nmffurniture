@@ -7,6 +7,19 @@
   --color-secondary-light: #F7F3EE;
   --color-accent: #9A4B4B;
 
+  /* Royal Brand Identity (From NMF Furniture Logo Kit) */
+  --color-brand-burgundy-dark: #1E0307;
+  --color-brand-burgundy: #38050E;
+  --color-brand-burgundy-rich: #4D0914;
+  --color-brand-burgundy-glow: rgba(77, 9, 20, 0.45);
+  --color-brand-gold: #D4AF37;
+  --color-brand-gold-light: #F6E6BF;
+  --color-brand-gold-dark: #A87B1D;
+  --gradient-royal-gold: linear-gradient(135deg, #FBF2CF 0%, #D4AF37 50%, #9F721B 100%);
+  --gradient-royal-burgundy: linear-gradient(135deg, #38050E 0%, #1A0205 100%);
+  --shadow-gold-glow: 0 4px 20px rgba(212, 175, 55, 0.35);
+  --shadow-burgundy-glow: 0 8px 32px rgba(56, 5, 14, 0.5);
+
   --color-bg: #FFFFFF;
   --color-bg-alt: #FAF8F5;
   --color-bg-muted: #F0ECE4;

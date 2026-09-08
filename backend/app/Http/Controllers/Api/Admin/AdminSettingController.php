@@ -34,9 +34,20 @@ class AdminSettingController extends Controller
         ]);
 
         foreach ($validated['settings'] as $key => $value) {
-            Setting::where('key', $key)->update([
-                'value' => is_bool($value) ? ($value ? '1' : '0') : (string)$value,
-            ]);
+            $existing = Setting::where('key', $key)->first();
+            $group = $existing ? $existing->group : (str_starts_with($key, 'hero_carousel') ? 'homepage' : 'general');
+            $stringValue = is_bool($value)
+                ? ($value ? '1' : '0')
+                : (is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : (string)$value);
+
+            Setting::updateOrCreate(
+                ['key' => $key],
+                [
+                    'value' => $stringValue,
+                    'group' => $group,
+                    'is_public' => true,
+                ]
+            );
         }
 
         // Flush settings cache so live site reflects changes immediately

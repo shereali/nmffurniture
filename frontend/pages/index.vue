@@ -1,34 +1,41 @@
 <template>
   <div>
-    <!-- Editorial Hero Section -->
-    <section class="hero-section">
-      <div class="hero-bg-container">
-        <img
-          :src="heroImageUrl"
-          alt="Handcrafted luxury sofa living room"
-          class="hero-bg-image"
-          fetchpriority="high"
-          loading="eager"
-          decoding="async"
-        />
-        <div class="hero-gradient-overlay"></div>
-      </div>
+    <!-- Editorial Hero Section with Dynamic Carousel Slider -->
+    <section class="hero-wrapper-section">
+      <HeroCarousel
+        v-if="isCarouselEnabled"
+        :slides="carouselSlides"
+        :settings="carouselSettings"
+      />
+      <div v-else class="hero-section">
+        <div class="hero-bg-container">
+          <img
+            :src="heroImageUrl"
+            alt="Handcrafted luxury sofa living room"
+            class="hero-bg-image"
+            fetchpriority="high"
+            loading="eager"
+            decoding="async"
+          />
+          <div class="hero-gradient-overlay"></div>
+        </div>
 
-      <div class="container hero-container">
-        <div class="hero-content animate-fade-in">
-          <span class="hero-eyebrow">{{ heroEyebrow }}</span>
-          <h1 class="hero-title">{{ heroTitle }}</h1>
-          <p class="hero-subtitle">
-            {{ heroSubtitle }}
-          </p>
-          <div class="flex gap-4 items-center flex-wrap">
-            <NuxtLink :to="heroBtnPrimaryLink" class="btn btn-secondary btn-lg">
-              {{ heroBtnPrimaryText }}
-            </NuxtLink>
-            <NuxtLink :to="heroBtnSecondaryLink" class="btn btn-glass btn-lg">
-              <i class="fa-solid fa-location-dot" style="color: var(--color-secondary);"></i>
-              {{ heroBtnSecondaryText }}
-            </NuxtLink>
+        <div class="container hero-container">
+          <div class="hero-content animate-fade-in">
+            <span class="hero-eyebrow">{{ heroEyebrow }}</span>
+            <h1 class="hero-title">{{ heroTitle }}</h1>
+            <p class="hero-subtitle">
+              {{ heroSubtitle }}
+            </p>
+            <div class="flex gap-4 items-center flex-wrap">
+              <NuxtLink :to="heroBtnPrimaryLink" class="btn btn-royal-gold btn-lg">
+                {{ heroBtnPrimaryText }}
+              </NuxtLink>
+              <NuxtLink :to="heroBtnSecondaryLink" class="btn btn-glass-gold btn-lg">
+                <i class="fa-solid fa-location-dot" style="color: var(--color-brand-gold);"></i>
+                {{ heroBtnSecondaryText }}
+              </NuxtLink>
+            </div>
           </div>
         </div>
       </div>
@@ -439,6 +446,106 @@ const heroBtnPrimaryLink = computed(() => settingsStore.getSetting('hero_btn_pri
 const heroBtnSecondaryText = computed(() => settingsStore.getSetting('hero_btn_secondary_text', 'Visit Our Showrooms'))
 const heroBtnSecondaryLink = computed(() => settingsStore.getSetting('hero_btn_secondary_link', '/our-showroom'))
 
+// Hero Carousel Computed Settings & Slides
+const isCarouselEnabled = computed(() => {
+  const val = settingsStore.getSetting('hero_carousel_enabled', '1')
+  return val !== '0' && val !== 'false' && val !== false
+})
+
+const carouselSettings = computed(() => ({
+  enabled: settingsStore.getSetting('hero_carousel_enabled', '1'),
+  autoplay: settingsStore.getSetting('hero_carousel_autoplay', '1'),
+  interval: Number(settingsStore.getSetting('hero_carousel_interval', '6000')),
+  height: settingsStore.getSetting('hero_carousel_height', 'standard'),
+  transition: settingsStore.getSetting('hero_carousel_transition', 'fade'),
+}))
+
+const carouselSlides = computed(() => {
+  const raw = settingsStore.getSetting('hero_carousel_slides')
+  if (raw) {
+    try {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed
+      }
+    } catch (e) {
+      console.warn('Failed to parse hero_carousel_slides JSON', e)
+    }
+  }
+
+  return [
+    {
+      id: 1,
+      media_type: 'image',
+      media_url: heroImageUrl.value || 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: heroEyebrow.value || 'BUKIT JELUTONG WORKSHOP • DIRECT FACTORY CRAFT',
+      title: heroTitle.value || 'Bespoke Sofas Engineered For A Lifetime',
+      subtitle: heroSubtitle.value || 'Handcrafted with 100% kiln-dried Malaysian solid Meranti hardwood frames, dual-tier pocket springs, and custom sizing to perfectly match your floorplan.',
+      badge_text: '★ 4.9/5 Verified Rating • 4,800+ Homes Furnished',
+      button_mode: 'double',
+      btn_primary_text: heroBtnPrimaryText.value || 'Explore Bespoke Living',
+      btn_primary_link: heroBtnPrimaryLink.value || '/shop?category=sofa',
+      btn_primary_style: 'royal-gold',
+      btn_secondary_text: heroBtnSecondaryText.value || 'Visit Our Showrooms',
+      btn_secondary_link: heroBtnSecondaryLink.value || '/our-showroom',
+      btn_secondary_style: 'glass',
+      is_active: true,
+    },
+    {
+      id: 2,
+      media_type: 'image',
+      media_url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: 'PERFORMANCE TEXTILE INNOVATION • SPILL & CLAW PROOF',
+      title: '200+ Pet-Friendly & Stain-Resistant Fabrics',
+      subtitle: 'Experience luxury French bouclés, claw-resistant velvets, and hydrophobic weaves built for living rooms with energetic pets and growing children.',
+      badge_text: 'Complimentary Fabric Swatch Box Delivered Free',
+      button_mode: 'double',
+      btn_primary_text: 'Request Swatch Box',
+      btn_primary_link: `https://wa.me/${whatsappDefault.value}?text=${encodeURIComponent('Hello NMFFurniture, I would like to request your complimentary 200+ fabric swatch box.')}`,
+      btn_primary_style: 'whatsapp',
+      btn_secondary_text: 'Browse Fabric Guide',
+      btn_secondary_link: '/shop',
+      btn_secondary_style: 'glass',
+      is_active: true,
+    },
+    {
+      id: 3,
+      media_type: 'video',
+      media_url: 'https://assets.mixkit.co/videos/preview/mixkit-carpenter-measuring-a-piece-of-wood-in-a-workshop-43867-large.mp4',
+      video_poster: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: '100% SOLID MERANTI HARDWOOD • ZERO PARTICLE BOARD',
+      title: '5-Year Structural Frame Warranty Guaranteed',
+      subtitle: 'Every timber joint is mortise-and-tenon reinforced by veteran Malaysian craftsmen. Factory-direct pricing with zero middleman markups.',
+      badge_text: 'Save Up To 40% Direct Factory Pricing',
+      button_mode: 'double',
+      btn_primary_text: 'Explore Factory Direct',
+      btn_primary_link: '/shop',
+      btn_primary_style: 'royal-gold',
+      btn_secondary_text: 'Our Joinery Heritage',
+      btn_secondary_link: '/about',
+      btn_secondary_style: 'wine',
+      is_active: true,
+    },
+    {
+      id: 4,
+      media_type: 'image',
+      media_url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: 'BESPOKE SIZING • RESIDENTIAL & VILLA FITOUTS',
+      title: 'Tailored To Your Living Room Floorplan',
+      subtitle: 'From Mont Kiara penthouses to Setia Eco Park villas, our master design concierge customises length, L-shape orientation, and cushion firmness.',
+      badge_text: 'Free 3D Layout & Dimension Consultation',
+      button_mode: 'single',
+      btn_primary_text: 'Book Showroom Consultation',
+      btn_primary_link: '/our-showroom',
+      btn_primary_style: 'royal-gold',
+      btn_secondary_text: '',
+      btn_secondary_link: '',
+      btn_secondary_style: 'glass',
+      is_active: true,
+    }
+  ]
+})
+
 // 8 Category Cards for NMFFurniture collections
 const homeCategories = [
   { name: 'Sofas & Sectionals', slug: 'sofa', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80' },
@@ -581,6 +688,13 @@ useHead({
 </script>
 
 <style scoped>
+.hero-wrapper-section {
+  position: relative;
+  background-color: var(--color-brand-burgundy-dark);
+  display: flex;
+  flex-direction: column;
+}
+
 .hero-section {
   position: relative;
   min-height: 85vh;

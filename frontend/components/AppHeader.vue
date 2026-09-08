@@ -13,7 +13,7 @@
     <nav class="nav-container">
       <!-- Logo -->
       <NuxtLink to="/" class="brand-logo">
-        <img v-if="siteLogo" :src="siteLogo" :alt="siteName" style="height: 38px; width: auto; object-fit: contain;" />
+        <img v-if="siteLogo" :src="siteLogo" :alt="siteName" style="height: 44px; width: auto; object-fit: contain; max-width: 240px;" />
         <template v-else>
           {{ brandPrimary }} <span v-if="brandAccent" class="accent">{{ brandAccent }}</span>
           <span v-if="brandBadge" class="brand-badge">{{ brandBadge }}</span>
@@ -387,7 +387,7 @@ const isMobileMenuOpen = ref(false)
 
 // Dynamic Website Settings Getters
 const siteName = computed(() => settingsStore.getSetting('site_name', 'NMF Furniture'))
-const siteLogo = computed(() => settingsStore.getSetting('site_logo', ''))
+const siteLogo = computed(() => settingsStore.getSetting('site_logo', '/images/brand/website_logo_4K.png'))
 const brandPrimary = computed(() => {
   const custom = settingsStore.getSetting('brand_name_primary')
   if (custom) return custom

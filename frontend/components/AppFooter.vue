@@ -4,12 +4,9 @@
       <div class="footer-grid">
         <!-- Col 1: About & SSM -->
         <div class="footer-col">
-          <h3 style="color: #FFFFFF; font-size: 1.5rem; margin-bottom: 0.35rem; letter-spacing: 0.05em;">
-            {{ siteName }}
-          </h3>
-          <p style="font-size: 0.85rem; color: var(--color-secondary); margin-bottom: 0.85rem; font-weight: 500;">
-            {{ siteTagline }}
-          </p>
+          <NuxtLink to="/" style="text-decoration: none; display: inline-block; margin-bottom: 1rem;">
+            <img :src="siteLogo" :alt="siteName" style="height: 52px; width: auto; object-fit: contain;" />
+          </NuxtLink>
           <p style="margin-bottom: 1rem;">
             {{ footerAboutText }}
           </p>
@@ -89,8 +86,9 @@ import { useSettingsStore } from '~/stores/settings'
 const settingsStore = useSettingsStore()
 const config = useRuntimeConfig()
 
-const siteName = computed(() => settingsStore.getSetting('site_name', 'NMF'))
-const siteTagline = computed(() => settingsStore.getSetting('site_tagline', 'FURNITURE'))
+const siteName = computed(() => settingsStore.getSetting('site_name', 'NMFFurniture'))
+const siteLogo = computed(() => settingsStore.getSetting('site_logo', '/images/brand/website_logo_4K.png'))
+const siteTagline = computed(() => settingsStore.getSetting('site_tagline', 'Bespoke Handcrafted Living Furniture Malaysia'))
 const ssmNumber = computed(() => settingsStore.getSetting('ssm_number', config.public.ssmNumber || 'SSM 1400875-P'))
 const footerAboutText = computed(() => settingsStore.getSetting('footer_about_text', 'NMFFurniture Sdn Bhd is a leading in-house manufacturer of high-quality handcrafted sofas and bespoke living furniture in Malaysia. Every piece is built with a reinforced solid wood frame backed by our 5-Year Wood Warranty.'))
 

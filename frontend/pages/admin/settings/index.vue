@@ -386,6 +386,203 @@
       </div>
     </div>
 
+    <!-- Tab 6: Hero Carousel & Sliders Manager -->
+    <div v-show="currentTab === 'carousel'" class="settings-card animate-fade-in">
+      <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+        <div>
+          <h3 class="settings-section-title" style="margin-bottom: 0.25rem;">
+            <i class="fa-solid fa-images"></i> Hero Carousel & Dynamic Sliders
+          </h3>
+          <p class="settings-section-desc">
+            Configure homepage hero slider, image/video backgrounds, client hunting badges, and single/double action buttons.
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button @click="resetDefaultSlides" class="btn btn-outline btn-sm" title="Reset slides to official luxury Malaysian furniture defaults">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Reset Defaults
+          </button>
+          <button @click="openAddSlideModal" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-plus"></i> Add New Slide
+          </button>
+        </div>
+      </div>
+
+      <!-- Global Carousel Configuration Grid -->
+      <div class="carousel-config-box mb-8">
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-sliders" style="color: var(--color-brand-gold);"></i> Global Carousel Settings
+        </h4>
+
+        <div class="grid grid-cols-2 gap-6">
+          <div class="settings-toggle-row">
+            <div>
+              <strong>Enable Carousel Slider</strong>
+              <p style="font-size: 0.8rem; color: var(--color-text-muted); margin: 0;">Toggle between dynamic rotating carousel or single static hero image.</p>
+            </div>
+            <label class="switch">
+              <input v-model="formSettings.hero_carousel_enabled" type="checkbox" :true-value="'1'" :false-value="'0'" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-toggle-row">
+            <div>
+              <strong>Autoplay Rotating Slides</strong>
+              <p style="font-size: 0.8rem; color: var(--color-text-muted); margin: 0;">Automatically rotate through slides with progress timer.</p>
+            </div>
+            <label class="switch">
+              <input v-model="formSettings.hero_carousel_autoplay" type="checkbox" :true-value="'1'" :false-value="'0'" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Autoplay Slide Interval (Milliseconds)</label>
+            <input v-model.number="formSettings.hero_carousel_interval" type="number" step="1000" min="2000" max="15000" class="form-input" placeholder="6000" />
+            <span class="form-hint">Standard recommendation: 6000ms (6 seconds) for optimal reading time</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Standard Height Mode</label>
+            <select v-model="formSettings.hero_carousel_height" class="form-input">
+              <option value="standard">Standard Luxury (Recommended · 640px – 820px)</option>
+              <option value="compact">Compact Height (540px – 600px)</option>
+              <option value="immersive">Immersive Hero (85vh – 90vh)</option>
+            </select>
+            <span class="form-hint">Controls responsive viewport framing across mobile and desktop</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Slide Transition Effect</label>
+            <select v-model="formSettings.hero_carousel_transition" class="form-input">
+              <option value="fade">Smooth Cross-Fade (Luxury Elegance)</option>
+              <option value="slide">Horizontal Slide (Dynamic Momentum)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Slides List Management -->
+      <div class="slides-management-header flex items-center justify-between mb-4">
+        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-layer-group" style="color: var(--color-brand-gold);"></i>
+          Active Slides ({{ carouselSlidesList.length }})
+        </h4>
+        <span style="font-size: 0.8rem; color: var(--color-text-muted);">
+          Reorder with arrow buttons. Changes are saved with "Save All Settings".
+        </span>
+      </div>
+
+      <div v-if="carouselSlidesList.length === 0" class="text-center py-12 text-muted" style="background: #FAF8F5; border: 1px dashed var(--color-border); border-radius: var(--radius-sm);">
+        <i class="fa-solid fa-photo-film" style="font-size: 2.2rem; color: var(--color-border); margin-bottom: 0.5rem;"></i>
+        <p style="font-size: 0.95rem;">No carousel slides defined yet.</p>
+        <button @click="resetDefaultSlides" class="btn btn-secondary btn-sm mt-2">
+          Load Realistic Luxury Slides
+        </button>
+      </div>
+
+      <div v-else class="slides-cards-list">
+        <div
+          v-for="(slide, sIdx) in carouselSlidesList"
+          :key="slide.id || sIdx"
+          class="slide-row-card"
+          :class="{ 'is-inactive': slide.is_active === false }"
+        >
+          <!-- Order Controls -->
+          <div class="slide-order-controls">
+            <button
+              @click="moveSlide(sIdx, -1)"
+              :disabled="sIdx === 0"
+              class="menu-sort-btn"
+              title="Move slide up"
+            >
+              <i class="fa-solid fa-chevron-up"></i>
+            </button>
+            <span class="slide-index-pill">{{ sIdx + 1 }}</span>
+            <button
+              @click="moveSlide(sIdx, 1)"
+              :disabled="sIdx === carouselSlidesList.length - 1"
+              class="menu-sort-btn"
+              title="Move slide down"
+            >
+              <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </div>
+
+          <!-- Slide Media Preview Thumbnail -->
+          <div class="slide-media-preview">
+            <img
+              :src="slide.media_type === 'video' ? (slide.video_poster || slide.media_url) : slide.media_url"
+              :alt="slide.title"
+              class="slide-thumb-img"
+              @error="(e: any) => e.target.src = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=150&q=80'"
+            />
+            <span v-if="slide.media_type === 'video'" class="slide-media-tag video">
+              <i class="fa-solid fa-video"></i> VIDEO
+            </span>
+            <span v-else class="slide-media-tag image">
+              <i class="fa-regular fa-image"></i> IMAGE
+            </span>
+          </div>
+
+          <!-- Slide Content Summary -->
+          <div class="slide-info-body">
+            <div class="flex items-center gap-2 flex-wrap mb-1">
+              <span v-if="slide.eyebrow" class="slide-eyebrow-badge">{{ slide.eyebrow }}</span>
+              <span v-if="slide.badge_text" class="slide-trust-badge">
+                <i class="fa-solid fa-crown"></i> {{ slide.badge_text }}
+              </span>
+              <span class="slide-btn-mode-badge">
+                {{ slide.button_mode === 'double' ? 'Double Button' : 'Single Button' }}
+              </span>
+              <span v-if="slide.is_active === false" class="badge-draft">Draft (Hidden)</span>
+            </div>
+
+            <h4 class="slide-card-title">{{ slide.title }}</h4>
+            <p class="slide-card-subtitle">{{ slide.subtitle }}</p>
+
+            <div class="slide-card-buttons-preview flex items-center gap-2 mt-2">
+              <span class="btn-preview-tag primary">
+                <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> {{ slide.btn_primary_text || 'Primary Button' }}
+                <code style="font-size: 0.7rem; opacity: 0.8; margin-left: 0.25rem;">{{ slide.btn_primary_link }}</code>
+              </span>
+              <span v-if="slide.button_mode === 'double' && slide.btn_secondary_text" class="btn-preview-tag secondary">
+                <i class="fa-solid fa-circle" style="font-size: 0.45rem;"></i> {{ slide.btn_secondary_text }}
+                <code style="font-size: 0.7rem; opacity: 0.8; margin-left: 0.25rem;">{{ slide.btn_secondary_link }}</code>
+              </span>
+            </div>
+          </div>
+
+          <!-- Slide Actions -->
+          <div class="slide-actions-cell">
+            <button
+              @click="toggleSlideActive(sIdx)"
+              class="action-icon-btn"
+              :class="{ active: slide.is_active !== false }"
+              :title="slide.is_active === false ? 'Activate Slide' : 'Hide Slide (Draft)'"
+            >
+              <i :class="slide.is_active === false ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye'"></i>
+            </button>
+            <button
+              @click="openEditSlideModal(sIdx)"
+              class="action-icon-btn"
+              title="Edit Slide Details"
+            >
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button
+              @click="deleteSlide(sIdx)"
+              class="action-icon-btn danger"
+              title="Delete Slide"
+            >
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Tab 6: SEO, Marketing & Tracking Scripts -->
     <div v-show="currentTab === 'seo'" class="settings-card animate-fade-in">
       <h3 class="settings-section-title">
@@ -481,6 +678,211 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal Dialog: Add / Edit Carousel Slide -->
+    <div v-if="isSlideModalOpen" class="modal-backdrop" @click.self="isSlideModalOpen = false">
+      <div class="modal-box modal-box-lg animate-slide-up">
+        <div class="modal-header">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-images" style="color: var(--color-brand-gold);"></i>
+            {{ editingSlideIndex !== null ? 'Edit Carousel Slide' : 'Add New Carousel Slide' }}
+          </h3>
+          <button @click="isSlideModalOpen = false" class="modal-close-btn">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <div class="modal-body modal-scrollable">
+          <!-- Slide Heading & Text -->
+          <div class="form-group mb-4">
+            <label class="form-label">Slide Caption / Main Title (H1) *</label>
+            <input v-model="slideForm.title" type="text" class="form-input" placeholder="e.g. Bespoke Sofas Engineered For A Lifetime" required />
+            <span class="form-hint">Main luxurious serif headline shown on the hero banner</span>
+          </div>
+
+          <div class="form-group mb-4">
+            <label class="form-label">Slide Subtitle / Description Paragraph</label>
+            <textarea v-model="slideForm.subtitle" rows="2" class="form-input" placeholder="e.g. Handcrafted with 100% kiln-dried solid hardwood frames, pocket spring suspension, and pet-friendly fabrics."></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="form-group">
+              <label class="form-label">Eyebrow / Category Tag</label>
+              <input v-model="slideForm.eyebrow" type="text" class="form-input" placeholder="e.g. BUKIT JELUTONG WORKSHOP • DIRECT FACTORY CRAFT" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Client Hunting Trust Badge</label>
+              <input v-model="slideForm.badge_text" type="text" class="form-input" placeholder="e.g. ★ 4.9/5 Verified Rating • 4,800+ Homes Furnished" />
+              <span class="form-hint">Floating luxury pill badge for high-conversion social proof</span>
+            </div>
+          </div>
+
+          <!-- Media Configuration: Image vs Video -->
+          <div class="settings-box-panel mb-4">
+            <label class="form-label" style="font-weight: 700; margin-bottom: 0.5rem;">Background Media Type</label>
+            <div class="flex items-center gap-6 mb-3">
+              <label class="radio-option">
+                <input type="radio" v-model="slideForm.media_type" value="image" />
+                <span class="radio-label"><i class="fa-regular fa-image"></i> High-Resolution Photography (Image)</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" v-model="slideForm.media_type" value="video" />
+                <span class="radio-label"><i class="fa-solid fa-video"></i> Craftsmanship Video (MP4 / WebM)</span>
+              </label>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label">{{ slideForm.media_type === 'video' ? 'Video File URL (MP4 / WebM)' : 'High-Resolution Image URL' }} *</label>
+              <input v-model="slideForm.media_url" type="text" class="form-input" placeholder="https://..." required />
+            </div>
+
+            <div v-if="slideForm.media_type === 'video'" class="form-group mb-3">
+              <label class="form-label">Video Poster Fallback Image URL</label>
+              <input v-model="slideForm.video_poster" type="text" class="form-input" placeholder="https://... (Image shown before video loads)" />
+            </div>
+
+            <!-- Quick Presets -->
+            <div class="media-presets-wrap mt-2">
+              <span style="font-size: 0.75rem; font-weight: 700; color: var(--color-text-muted); text-transform: uppercase;">
+                Realistic Media Presets:
+              </span>
+              <div class="flex items-center gap-2 flex-wrap mt-1">
+                <button
+                  type="button"
+                  @click="slideForm.media_url = 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=2000&q=85'; slideForm.media_type = 'image';"
+                  class="preset-chip-btn"
+                >
+                  <i class="fa-regular fa-image"></i> Emerald Living Room
+                </button>
+                <button
+                  type="button"
+                  @click="slideForm.media_url = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=2000&q=85'; slideForm.media_type = 'image';"
+                  class="preset-chip-btn"
+                >
+                  <i class="fa-regular fa-image"></i> Fabric & Bouclé Swatches
+                </button>
+                <button
+                  type="button"
+                  @click="slideForm.media_url = 'https://assets.mixkit.co/videos/preview/mixkit-carpenter-measuring-a-piece-of-wood-in-a-workshop-43867-large.mp4'; slideForm.video_poster = 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=2000&q=85'; slideForm.media_type = 'video';"
+                  class="preset-chip-btn"
+                >
+                  <i class="fa-solid fa-video"></i> Carpentry Joinery Video
+                </button>
+                <button
+                  type="button"
+                  @click="slideForm.media_url = 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2000&q=85'; slideForm.media_type = 'image';"
+                  class="preset-chip-btn"
+                >
+                  <i class="fa-regular fa-image"></i> Curved Penthouse Sofa
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Buttons Configuration: Single or Double Button -->
+          <div class="settings-box-panel mb-4">
+            <label class="form-label" style="font-weight: 700; margin-bottom: 0.5rem;">Action Buttons Configuration</label>
+            <div class="flex items-center gap-6 mb-4">
+              <label class="radio-option">
+                <input type="radio" v-model="slideForm.button_mode" value="single" />
+                <span class="radio-label">Single Button</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" v-model="slideForm.button_mode" value="double" />
+                <span class="radio-label">Double Button (Recommended for High Conversion)</span>
+              </label>
+            </div>
+
+            <!-- Primary Button Fields -->
+            <div class="button-config-card mb-4">
+              <div class="button-config-card-header">
+                <strong><i class="fa-solid fa-1"></i> Primary Button</strong>
+              </div>
+              <div class="grid grid-cols-3 gap-3 p-3">
+                <div class="form-group">
+                  <label class="form-label">Button Text *</label>
+                  <input v-model="slideForm.btn_primary_text" type="text" class="form-input" placeholder="Explore Collections" required />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Destination URL</label>
+                  <input v-model="slideForm.btn_primary_link" type="text" class="form-input" placeholder="/shop" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Button Style</label>
+                  <select v-model="slideForm.btn_primary_style" class="form-input">
+                    <option value="royal-gold">Royal Gold Gradient (High Contrast)</option>
+                    <option value="wine">Burgundy Wine (Brand Luxury)</option>
+                    <option value="glass">Glassmorphism Gold</option>
+                    <option value="whatsapp">WhatsApp Direct Green</option>
+                    <option value="outline">Outline Gold</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Secondary Button Fields (If Double Button) -->
+            <div v-if="slideForm.button_mode === 'double'" class="button-config-card">
+              <div class="button-config-card-header flex items-center justify-between">
+                <strong><i class="fa-solid fa-2"></i> Secondary Button</strong>
+                <div class="flex items-center gap-2">
+                  <button
+                    type="button"
+                    @click="slideForm.btn_secondary_text = 'Visit Our Showrooms'; slideForm.btn_secondary_link = '/our-showroom'; slideForm.btn_secondary_style = 'glass';"
+                    class="quick-preset-link"
+                  >
+                    + Showrooms Preset
+                  </button>
+                  <button
+                    type="button"
+                    @click="slideForm.btn_secondary_text = 'WhatsApp Concierge'; slideForm.btn_secondary_link = 'https://wa.me/60192589920?text=Hello%20NMFFurniture'; slideForm.btn_secondary_style = 'glass';"
+                    class="quick-preset-link"
+                  >
+                    + WhatsApp Preset
+                  </button>
+                </div>
+              </div>
+              <div class="grid grid-cols-3 gap-3 p-3">
+                <div class="form-group">
+                  <label class="form-label">Button Text</label>
+                  <input v-model="slideForm.btn_secondary_text" type="text" class="form-input" placeholder="Visit Showrooms" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Destination URL</label>
+                  <input v-model="slideForm.btn_secondary_link" type="text" class="form-input" placeholder="/our-showroom" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Button Style</label>
+                  <select v-model="slideForm.btn_secondary_style" class="form-input">
+                    <option value="glass">Glassmorphism Gold (Recommended)</option>
+                    <option value="wine">Burgundy Wine (Brand Luxury)</option>
+                    <option value="royal-gold">Royal Gold Gradient</option>
+                    <option value="whatsapp">WhatsApp Direct Green</option>
+                    <option value="outline">Outline Gold</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Status -->
+          <div class="form-group">
+            <label class="form-label">Slide Display Status</label>
+            <select v-model="slideForm.is_active" class="form-input">
+              <option :value="true">Active (Visible on Homepage)</option>
+              <option :value="false">Draft / Inactive (Hidden from Homepage)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button @click="isSlideModalOpen = false" class="btn btn-outline btn-sm">Cancel</button>
+          <button @click="saveSlide" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-check"></i> {{ editingSlideIndex !== null ? 'Update Slide' : 'Add Slide to Carousel' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -505,6 +907,7 @@ const tabs = [
   { id: 'menus', label: 'Navigation Menus', icon: 'fa-solid fa-compass' },
   { id: 'footer', label: 'Footer & Showroom', icon: 'fa-solid fa-landmark' },
   { id: 'homepage', label: 'Homepage Sections', icon: 'fa-solid fa-house-chimney' },
+  { id: 'carousel', label: 'Hero Carousel & Sliders', icon: 'fa-solid fa-images' },
   { id: 'seo', label: 'SEO & Tracking', icon: 'fa-solid fa-chart-pie' },
 ]
 
@@ -550,11 +953,227 @@ const formSettings = reactive<Record<string, any>>({
   hero_btn_primary_link: '',
   hero_btn_secondary_text: '',
   hero_btn_secondary_link: '',
+  hero_carousel_enabled: '1',
+  hero_carousel_autoplay: '1',
+  hero_carousel_interval: 6000,
+  hero_carousel_height: 'standard',
+  hero_carousel_transition: 'fade',
+  hero_carousel_slides: '',
   seo_meta_title: '',
   seo_meta_description: '',
   seo_ga4_id: '',
   seo_pixel_id: '',
 })
+
+// Carousel Slides State & Methods
+const carouselSlidesList = ref<any[]>([])
+const isSlideModalOpen = ref(false)
+const editingSlideIndex = ref<number | null>(null)
+
+const slideForm = reactive({
+  id: '',
+  media_type: 'image',
+  media_url: '',
+  video_poster: '',
+  eyebrow: '',
+  title: '',
+  subtitle: '',
+  badge_text: '',
+  button_mode: 'double',
+  btn_primary_text: '',
+  btn_primary_link: '',
+  btn_primary_style: 'royal-gold',
+  btn_secondary_text: '',
+  btn_secondary_link: '',
+  btn_secondary_style: 'glass',
+  is_active: true,
+})
+
+function getDefaultSlides() {
+  return [
+    {
+      id: 1,
+      media_type: 'image',
+      media_url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: 'BUKIT JELUTONG WORKSHOP • DIRECT FACTORY CRAFT',
+      title: 'Bespoke Sofas Engineered For A Lifetime',
+      subtitle: 'Handcrafted with 100% kiln-dried Malaysian solid Meranti hardwood frames, dual-tier pocket springs, and custom sizing to perfectly match your floorplan.',
+      badge_text: '★ 4.9/5 Verified Rating • 4,800+ Homes Furnished',
+      button_mode: 'double',
+      btn_primary_text: 'Explore Bespoke Living',
+      btn_primary_link: '/shop?category=sofa',
+      btn_primary_style: 'royal-gold',
+      btn_secondary_text: 'Visit Our Showrooms',
+      btn_secondary_link: '/our-showroom',
+      btn_secondary_style: 'glass',
+      is_active: true,
+    },
+    {
+      id: 2,
+      media_type: 'image',
+      media_url: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: 'PERFORMANCE TEXTILE INNOVATION • SPILL & CLAW PROOF',
+      title: '200+ Pet-Friendly & Stain-Resistant Fabrics',
+      subtitle: 'Experience luxury French bouclés, claw-resistant velvets, and hydrophobic weaves built for living rooms with energetic pets and growing children.',
+      badge_text: 'Complimentary Fabric Swatch Box Delivered Free',
+      button_mode: 'double',
+      btn_primary_text: 'Request Swatch Box',
+      btn_primary_link: 'https://wa.me/60192589920?text=Hello%20NMFFurniture%2C%20I%20would%20like%20to%20request%20your%20complimentary%20200%2B%20fabric%20swatch%20box.',
+      btn_primary_style: 'whatsapp',
+      btn_secondary_text: 'Browse Fabric Guide',
+      btn_secondary_link: '/shop',
+      btn_secondary_style: 'glass',
+      is_active: true,
+    },
+    {
+      id: 3,
+      media_type: 'video',
+      media_url: 'https://assets.mixkit.co/videos/preview/mixkit-carpenter-measuring-a-piece-of-wood-in-a-workshop-43867-large.mp4',
+      video_poster: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: '100% SOLID MERANTI HARDWOOD • ZERO PARTICLE BOARD',
+      title: '5-Year Structural Frame Warranty Guaranteed',
+      subtitle: 'Every timber joint is mortise-and-tenon reinforced by veteran Malaysian craftsmen. Factory-direct pricing with zero middleman markups.',
+      badge_text: 'Save Up To 40% Direct Factory Pricing',
+      button_mode: 'double',
+      btn_primary_text: 'Explore Factory Direct',
+      btn_primary_link: '/shop',
+      btn_primary_style: 'royal-gold',
+      btn_secondary_text: 'Our Joinery Heritage',
+      btn_secondary_link: '/about',
+      btn_secondary_style: 'wine',
+      is_active: true,
+    },
+    {
+      id: 4,
+      media_type: 'image',
+      media_url: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2000&q=85',
+      eyebrow: 'BESPOKE SIZING • RESIDENTIAL & VILLA FITOUTS',
+      title: 'Tailored To Your Living Room Floorplan',
+      subtitle: 'From Mont Kiara penthouses to Setia Eco Park villas, our master design concierge customises length, L-shape orientation, and cushion firmness.',
+      badge_text: 'Free 3D Layout & Dimension Consultation',
+      button_mode: 'single',
+      btn_primary_text: 'Book Showroom Consultation',
+      btn_primary_link: '/our-showroom',
+      btn_primary_style: 'royal-gold',
+      btn_secondary_text: '',
+      btn_secondary_link: '',
+      btn_secondary_style: 'glass',
+      is_active: true,
+    },
+  ]
+}
+
+function syncSlidesToForm() {
+  formSettings.hero_carousel_slides = JSON.stringify(carouselSlidesList.value)
+}
+
+function openAddSlideModal() {
+  editingSlideIndex.value = null
+  slideForm.id = 'slide_' + Date.now()
+  slideForm.media_type = 'image'
+  slideForm.media_url = ''
+  slideForm.video_poster = ''
+  slideForm.eyebrow = ''
+  slideForm.title = ''
+  slideForm.subtitle = ''
+  slideForm.badge_text = ''
+  slideForm.button_mode = 'double'
+  slideForm.btn_primary_text = 'Explore Collection'
+  slideForm.btn_primary_link = '/shop'
+  slideForm.btn_primary_style = 'royal-gold'
+  slideForm.btn_secondary_text = 'Visit Showrooms'
+  slideForm.btn_secondary_link = '/our-showroom'
+  slideForm.btn_secondary_style = 'glass'
+  slideForm.is_active = true
+  isSlideModalOpen.value = true
+}
+
+function openEditSlideModal(index: number) {
+  editingSlideIndex.value = index
+  const item = carouselSlidesList.value[index]
+  if (!item) return
+  slideForm.id = item.id || 'slide_' + Date.now()
+  slideForm.media_type = item.media_type || 'image'
+  slideForm.media_url = item.media_url || ''
+  slideForm.video_poster = item.video_poster || ''
+  slideForm.eyebrow = item.eyebrow || ''
+  slideForm.title = item.title || ''
+  slideForm.subtitle = item.subtitle || ''
+  slideForm.badge_text = item.badge_text || ''
+  slideForm.button_mode = item.button_mode || (item.btn_secondary_text ? 'double' : 'single')
+  slideForm.btn_primary_text = item.btn_primary_text || ''
+  slideForm.btn_primary_link = item.btn_primary_link || '/shop'
+  slideForm.btn_primary_style = item.btn_primary_style || 'royal-gold'
+  slideForm.btn_secondary_text = item.btn_secondary_text || ''
+  slideForm.btn_secondary_link = item.btn_secondary_link || '/our-showroom'
+  slideForm.btn_secondary_style = item.btn_secondary_style || 'glass'
+  slideForm.is_active = item.is_active !== false
+  isSlideModalOpen.value = true
+}
+
+function saveSlide() {
+  if (!slideForm.title || !slideForm.media_url) {
+    alert('Please provide at least a slide title and media URL.')
+    return
+  }
+
+  const slidePayload = {
+    id: slideForm.id,
+    media_type: slideForm.media_type,
+    media_url: slideForm.media_url,
+    video_poster: slideForm.video_poster,
+    eyebrow: slideForm.eyebrow,
+    title: slideForm.title,
+    subtitle: slideForm.subtitle,
+    badge_text: slideForm.badge_text,
+    button_mode: slideForm.button_mode,
+    btn_primary_text: slideForm.btn_primary_text,
+    btn_primary_link: slideForm.btn_primary_link,
+    btn_primary_style: slideForm.btn_primary_style,
+    btn_secondary_text: slideForm.button_mode === 'double' ? slideForm.btn_secondary_text : '',
+    btn_secondary_link: slideForm.button_mode === 'double' ? slideForm.btn_secondary_link : '',
+    btn_secondary_style: slideForm.button_mode === 'double' ? slideForm.btn_secondary_style : 'glass',
+    is_active: slideForm.is_active,
+  }
+
+  if (editingSlideIndex.value !== null) {
+    carouselSlidesList.value[editingSlideIndex.value] = slidePayload
+  } else {
+    carouselSlidesList.value.push(slidePayload)
+  }
+
+  syncSlidesToForm()
+  isSlideModalOpen.value = false
+}
+
+function deleteSlide(index: number) {
+  if (confirm('Are you sure you want to delete this slide?')) {
+    carouselSlidesList.value.splice(index, 1)
+    syncSlidesToForm()
+  }
+}
+
+function moveSlide(index: number, direction: number) {
+  const targetIndex = index + direction
+  if (targetIndex < 0 || targetIndex >= carouselSlidesList.value.length) return
+  const temp = carouselSlidesList.value[index]
+  carouselSlidesList.value[index] = carouselSlidesList.value[targetIndex]
+  carouselSlidesList.value[targetIndex] = temp
+  syncSlidesToForm()
+}
+
+function toggleSlideActive(index: number) {
+  const current = carouselSlidesList.value[index].is_active !== false
+  carouselSlidesList.value[index].is_active = !current
+  syncSlidesToForm()
+}
+
+function resetDefaultSlides() {
+  if (confirm('Reset carousel slides to default Malaysian luxury craftsmanship set?')) {
+    carouselSlidesList.value = getDefaultSlides()
+    syncSlidesToForm()
+  }
+}
 
 // Menus State
 const menusList = ref<any[]>([])
@@ -596,6 +1215,24 @@ async function loadData() {
       settingsRes.settings.forEach((s: any) => {
         formSettings[s.key] = s.value
       })
+
+      // Parse carousel slides
+      if (formSettings.hero_carousel_slides) {
+        try {
+          const parsed = typeof formSettings.hero_carousel_slides === 'string'
+            ? JSON.parse(formSettings.hero_carousel_slides)
+            : formSettings.hero_carousel_slides
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            carouselSlidesList.value = parsed
+          } else {
+            carouselSlidesList.value = getDefaultSlides()
+          }
+        } catch (e) {
+          carouselSlidesList.value = getDefaultSlides()
+        }
+      } else {
+        carouselSlidesList.value = getDefaultSlides()
+      }
     }
 
     if (menusRes) {
@@ -611,6 +1248,9 @@ async function saveAllSettings() {
   isSaving.value = true
   saveSuccessMessage.value = ''
   try {
+    // Sync carousel slides to formSettings JSON string
+    formSettings.hero_carousel_slides = JSON.stringify(carouselSlidesList.value)
+
     const headers = { Authorization: `Bearer ${authStore.token}` }
     await $fetch(`${apiBase}/admin/settings/batch`, {
       method: 'POST',
@@ -1067,5 +1707,272 @@ input:checked + .slider:before {
   gap: 0.75rem;
   font-weight: 600;
   font-size: 0.9rem;
+}
+
+/* Modal Large & Scrollable */
+.modal-box.modal-box-lg {
+  max-width: 760px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-scrollable {
+  overflow-y: auto;
+  max-height: calc(90vh - 130px);
+}
+
+/* Carousel Management Styles */
+.carousel-config-box {
+  background: #FDFCF9;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+}
+
+.slides-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.slide-row-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all var(--transition-fast);
+}
+
+.slide-row-card:hover {
+  border-color: var(--color-secondary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.slide-row-card.is-inactive {
+  opacity: 0.65;
+  background: #F9FAFB;
+}
+
+.slide-order-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.slide-index-pill {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  width: 22px;
+  text-align: center;
+}
+
+.slide-media-preview {
+  position: relative;
+  width: 130px;
+  height: 80px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #1A0306;
+  flex-shrink: 0;
+}
+
+.slide-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slide-media-tag {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+}
+
+.slide-media-tag.video {
+  background: rgba(185, 28, 28, 0.88);
+}
+
+.slide-media-tag.image {
+  background: rgba(17, 24, 39, 0.85);
+}
+
+.slide-info-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.slide-eyebrow-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-secondary-dark);
+  letter-spacing: 0.05em;
+  background: var(--color-secondary-light);
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+
+.slide-trust-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+
+.slide-btn-mode-badge {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: #F3F4F6;
+  color: #374151;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+}
+
+.badge-draft {
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: #FEE2E2;
+  color: #991B1B;
+  padding: 0.15rem 0.45rem;
+  border-radius: 3px;
+}
+
+.slide-card-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  margin: 0.25rem 0 0.15rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slide-card-subtitle {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.btn-preview-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+}
+
+.btn-preview-tag.primary {
+  background: #F7F3EE;
+  color: var(--color-secondary-dark);
+  border: 1px solid rgba(181, 149, 109, 0.3);
+}
+
+.btn-preview-tag.secondary {
+  background: #F3F4F6;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
+.slide-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.settings-box-panel {
+  background: #F9F8F6;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.button-config-card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.button-config-card-header {
+  background: #F4F1EA;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-primary);
+}
+
+.preset-chip-btn {
+  background: #FFFFFF;
+  border: 1px solid var(--color-border);
+  border-radius: 9999px;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all var(--transition-fast);
+}
+
+.preset-chip-btn:hover {
+  background: var(--color-secondary-light);
+  border-color: var(--color-secondary);
+  color: var(--color-secondary-dark);
+}
+
+.quick-preset-link {
+  background: transparent;
+  border: none;
+  color: var(--color-secondary-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.quick-preset-link:hover {
+  text-decoration: underline;
 }
 </style>
