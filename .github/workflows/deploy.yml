@@ -39,6 +39,8 @@ jobs:
             exit 1
           }
 
+          echo "DEPLOY KEY FILE SHA256: $(sha256sum ~/.ssh/deploy_key | cut -d' ' -f1)"
+
           HOST=$(echo "$SSH_HOST" | tr -d '[:space:]')
           PORT=$(echo "${SSH_PORT:-22}" | tr -d '[:space:]')
           ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
