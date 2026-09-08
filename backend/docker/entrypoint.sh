@@ -21,7 +21,7 @@ if [ "$DB_CONNECTION" = "mysql" ]; then
 fi
 
 php artisan migrate --force || exit 1
-php artisan db:seed --force || exit 1
+php artisan db:seed --force || true
 
 php artisan config:clear >/dev/null 2>&1 || true
 php artisan route:clear >/dev/null 2>&1 || true

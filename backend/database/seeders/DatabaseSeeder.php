@@ -50,112 +50,134 @@ class DatabaseSeeder extends Seeder
         );
 
         // 2. Create Categories & Hierarchy
-        $catLiving = Category::create([
-            'name' => 'Living',
-            'slug' => 'living',
-            'description' => 'Sophisticated sofas, loungers, and coffee tables handcrafted for modern Malaysian homes.',
-            'image' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 1,
-        ]);
+        $catLiving = Category::firstOrCreate(
+            ['slug' => 'living'],
+            [
+                'name' => 'Living',
+                'description' => 'Sophisticated sofas, loungers, and coffee tables handcrafted for modern Malaysian homes.',
+                'image' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 1,
+            ]
+        );
 
-        $catSofa = Category::create([
-            'parent_id' => $catLiving->id,
-            'name' => 'Sofa',
-            'slug' => 'sofa',
-            'description' => 'Custom handmade sofas with 5-year solid wood warranty and pet-friendly easy clean fabrics.',
-            'image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 1,
-        ]);
+        $catSofa = Category::firstOrCreate(
+            ['slug' => 'sofa'],
+            [
+                'parent_id' => $catLiving->id,
+                'name' => 'Sofa',
+                'description' => 'Custom handmade sofas with 5-year solid wood warranty and pet-friendly easy clean fabrics.',
+                'image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 1,
+            ]
+        );
 
-        $catWingChair = Category::create([
-            'parent_id' => $catLiving->id,
-            'name' => 'Wing Chair',
-            'slug' => 'wing-chair',
-            'description' => 'Signature highback wing chairs designed for ergonomic luxury reading and statement corners.',
-            'image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 2,
-        ]);
+        $catWingChair = Category::firstOrCreate(
+            ['slug' => 'wing-chair'],
+            [
+                'parent_id' => $catLiving->id,
+                'name' => 'Wing Chair',
+                'description' => 'Signature highback wing chairs designed for ergonomic luxury reading and statement corners.',
+                'image' => 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 2,
+            ]
+        );
 
-        $catCoffeeTable = Category::create([
-            'parent_id' => $catLiving->id,
-            'name' => 'Coffee Table',
-            'slug' => 'coffee-table',
-            'description' => 'Minimalist fluted timber and sintered stone coffee tables.',
-            'image' => 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 3,
-        ]);
+        $catCoffeeTable = Category::firstOrCreate(
+            ['slug' => 'coffee-table'],
+            [
+                'parent_id' => $catLiving->id,
+                'name' => 'Coffee Table',
+                'description' => 'Minimalist fluted timber and sintered stone coffee tables.',
+                'image' => 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 3,
+            ]
+        );
 
-        $catArmchair = Category::create([
-            'parent_id' => $catLiving->id,
-            'name' => 'Armchair',
-            'slug' => 'armchair',
-            'description' => 'Cozy modern single armchairs in 200+ fabric choices.',
-            'image' => 'https://images.unsplash.com/photo-1580481077195-c999335a968a?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 4,
-        ]);
+        $catArmchair = Category::firstOrCreate(
+            ['slug' => 'armchair'],
+            [
+                'parent_id' => $catLiving->id,
+                'name' => 'Armchair',
+                'description' => 'Cozy modern single armchairs in 200+ fabric choices.',
+                'image' => 'https://images.unsplash.com/photo-1580481077195-c999335a968a?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 4,
+            ]
+        );
 
-        $catBedroom = Category::create([
-            'name' => 'Bedroom',
-            'slug' => 'bedroom',
-            'description' => 'Bespoke upholstered bedframes and bedroom benches for restorative sleep.',
-            'image' => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 2,
-        ]);
+        $catBedroom = Category::firstOrCreate(
+            ['slug' => 'bedroom'],
+            [
+                'name' => 'Bedroom',
+                'description' => 'Bespoke upholstered bedframes and bedroom benches for restorative sleep.',
+                'image' => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 2,
+            ]
+        );
 
-        $catBedframe = Category::create([
-            'parent_id' => $catBedroom->id,
-            'name' => 'Bed Frame',
-            'slug' => 'bed-frame',
-            'description' => 'Solid hardwood structure upholstered headboards in Queen & King sizes.',
-            'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 1,
-        ]);
+        $catBedframe = Category::firstOrCreate(
+            ['slug' => 'bed-frame'],
+            [
+                'parent_id' => $catBedroom->id,
+                'name' => 'Bed Frame',
+                'description' => 'Solid hardwood structure upholstered headboards in Queen & King sizes.',
+                'image' => 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 1,
+            ]
+        );
 
-        $catBench = Category::create([
-            'parent_id' => $catBedroom->id,
-            'name' => 'Bench',
-            'slug' => 'bench',
-            'description' => 'Bed-end and entryway upholstered benches.',
-            'image' => 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 2,
-        ]);
+        $catBench = Category::firstOrCreate(
+            ['slug' => 'bench'],
+            [
+                'parent_id' => $catBedroom->id,
+                'name' => 'Bench',
+                'description' => 'Bed-end and entryway upholstered benches.',
+                'image' => 'https://images.unsplash.com/photo-1540574163026-643ea20ade25?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 2,
+            ]
+        );
 
-        $catDining = Category::create([
-            'name' => 'Dining',
-            'slug' => 'dining',
-            'description' => 'Solid timber dining tables and comfort-cushioned chairs for memorable family gatherings.',
-            'image' => 'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 3,
-        ]);
+        $catDining = Category::firstOrCreate(
+            ['slug' => 'dining'],
+            [
+                'name' => 'Dining',
+                'description' => 'Solid timber dining tables and comfort-cushioned chairs for memorable family gatherings.',
+                'image' => 'https://images.unsplash.com/photo-1617806118233-18e1de247200?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 3,
+            ]
+        );
 
-        $catDiningTable = Category::create([
-            'parent_id' => $catDining->id,
-            'name' => 'Dining Table',
-            'slug' => 'dining-table',
-            'description' => 'Solid Malaysian oak & sintered stone 6 to 8-seater dining tables.',
-            'image' => 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 1,
-        ]);
+        $catDiningTable = Category::firstOrCreate(
+            ['slug' => 'dining-table'],
+            [
+                'parent_id' => $catDining->id,
+                'name' => 'Dining Table',
+                'description' => 'Solid Malaysian oak & sintered stone 6 to 8-seater dining tables.',
+                'image' => 'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 1,
+            ]
+        );
 
-        $catDiningChair = Category::create([
-            'parent_id' => $catDining->id,
-            'name' => 'Dining Chair',
-            'slug' => 'dining-chair',
-            'description' => 'Ergonomic upholstered dining chairs with stain-resistant fabric.',
-            'image' => 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=800&q=80',
-            'is_featured' => true,
-            'sort_order' => 2,
-        ]);
+        $catDiningChair = Category::firstOrCreate(
+            ['slug' => 'dining-chair'],
+            [
+                'parent_id' => $catDining->id,
+                'name' => 'Dining Chair',
+                'description' => 'Ergonomic upholstered dining chairs with stain-resistant fabric.',
+                'image' => 'https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?auto=format&fit=crop&w=800&q=80',
+                'is_featured' => true,
+                'sort_order' => 2,
+            ]
+        );
 
         // 3. Products Data
         $products = [
@@ -365,77 +387,91 @@ class DatabaseSeeder extends Seeder
             unset($pData['images'], $pData['variants']);
 
             $pData['slug'] = Str::slug($pData['name']);
-            $product = Product::create($pData);
+            $product = Product::firstOrCreate(['slug' => $pData['slug']], $pData);
 
             foreach ($images as $idx => $img) {
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_url' => $img,
-                    'is_primary' => $idx === 0,
-                    'sort_order' => $idx,
-                ]);
+                ProductImage::firstOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'image_url' => $img,
+                    ],
+                    [
+                        'is_primary' => $idx === 0,
+                        'sort_order' => $idx,
+                    ]
+                );
             }
 
             foreach ($variants as $v) {
-                ProductVariant::create([
-                    'product_id' => $product->id,
-                    'name' => $v['name'],
-                    'option' => $v['option'],
-                    'price_adjustment' => $v['price_adjustment'],
-                    'color_code' => $v['color_code'] ?? null,
-                    'color_name' => $v['color_name'] ?? null,
-                ]);
+                ProductVariant::firstOrCreate(
+                    [
+                        'product_id' => $product->id,
+                        'name' => $v['name'],
+                        'option' => $v['option'],
+                    ],
+                    [
+                        'price_adjustment' => $v['price_adjustment'],
+                        'color_code' => $v['color_code'] ?? null,
+                        'color_name' => $v['color_name'] ?? null,
+                    ]
+                );
             }
         }
 
         // 4. Showrooms Data
-        Showroom::create([
-            'name' => 'NMFFurniture Shah Alam Flagship Showroom',
-            'branch' => 'Bukit Jelutong (Selangor)',
-            'address' => '2nd Floor, Lobby 3, UG41 Komersial Radia, Persiaran Arked, Bukit Jelutong',
-            'city' => 'Shah Alam',
-            'state' => 'Selangor',
-            'postal_code' => '40150',
-            'phone' => '+603 7832 9920',
-            'whatsapp_number' => '60192589920',
-            'whatsapp_prefill_text' => 'Hye NMFFurniture Shah Alam, I would like to visit the showroom.',
-            'map_embed_url' => 'https://maps.google.com/maps?q=Radia+Bukit+Jelutong+Shah+Alam&t=m&z=14&output=embed',
-            'opening_hours' => 'Tue - Sun: 10:30 AM - 7:30 PM (Closed on Monday)',
-            'image' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
-            'is_active' => true,
-        ]);
+        Showroom::firstOrCreate(
+            ['name' => 'NMFFurniture Shah Alam Flagship Showroom'],
+            [
+                'branch' => 'Bukit Jelutong (Selangor)',
+                'address' => '2nd Floor, Lobby 3, UG41 Komersial Radia, Persiaran Arked, Bukit Jelutong',
+                'city' => 'Shah Alam',
+                'state' => 'Selangor',
+                'postal_code' => '40150',
+                'phone' => '+603 7832 9920',
+                'whatsapp_number' => '60192589920',
+                'whatsapp_prefill_text' => 'Hye NMFFurniture Shah Alam, I would like to visit the showroom.',
+                'map_embed_url' => 'https://maps.google.com/maps?q=Radia+Bukit+Jelutong+Shah+Alam&t=m&z=14&output=embed',
+                'opening_hours' => 'Tue - Sun: 10:30 AM - 7:30 PM (Closed on Monday)',
+                'image' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+            ]
+        );
 
-        Showroom::create([
-            'name' => 'NMFFurniture Petaling Jaya Design Studio',
-            'branch' => 'Seksyen 13 (Petaling Jaya)',
-            'address' => 'No. 18, Jalan Universiti, Seksyen 13',
-            'city' => 'Petaling Jaya',
-            'state' => 'Selangor',
-            'postal_code' => '46200',
-            'phone' => '+603 7955 8810',
-            'whatsapp_number' => '60192589921',
-            'whatsapp_prefill_text' => 'Hye NMFFurniture PJ Studio, I would like to book an appointment.',
-            'map_embed_url' => 'https://maps.google.com/maps?q=Seksyen+13+Petaling+Jaya&t=m&z=14&output=embed',
-            'opening_hours' => 'Daily: 10:00 AM - 8:00 PM',
-            'image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=800&q=80',
-            'is_active' => true,
-        ]);
+        Showroom::firstOrCreate(
+            ['name' => 'NMFFurniture Petaling Jaya Design Studio'],
+            [
+                'branch' => 'Seksyen 13 (Petaling Jaya)',
+                'address' => 'No. 18, Jalan Universiti, Seksyen 13',
+                'city' => 'Petaling Jaya',
+                'state' => 'Selangor',
+                'postal_code' => '46200',
+                'phone' => '+603 7955 8810',
+                'whatsapp_number' => '60192589921',
+                'whatsapp_prefill_text' => 'Hye NMFFurniture PJ Studio, I would like to book an appointment.',
+                'map_embed_url' => 'https://maps.google.com/maps?q=Seksyen+13+Petaling+Jaya&t=m&z=14&output=embed',
+                'opening_hours' => 'Daily: 10:00 AM - 8:00 PM',
+                'image' => 'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+            ]
+        );
 
-        Showroom::create([
-            'name' => 'NMFFurniture Johor Bahru Gallery',
-            'branch' => 'Taman Molek (Johor Bahru)',
-            'address' => 'Lot 12, Jalan Molek 1/10, Taman Molek',
-            'city' => 'Johor Bahru',
-            'state' => 'Johor',
-            'postal_code' => '81100',
-            'phone' => '+607 355 4420',
-            'whatsapp_number' => '60192589922',
-            'whatsapp_prefill_text' => 'Hye NMFFurniture JB, I would like to check available floor stock.',
-            'map_embed_url' => 'https://maps.google.com/maps?q=Taman+Molek+Johor+Bahru&t=m&z=14&output=embed',
-            'opening_hours' => 'Daily: 11:00 AM - 8:00 PM',
-            'image' => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=80',
-            'is_active' => true,
-        ]);
+        Showroom::firstOrCreate(
+            ['name' => 'NMFFurniture Johor Bahru Gallery'],
+            [
+                'branch' => 'Taman Molek (Johor Bahru)',
+                'address' => 'Lot 12, Jalan Molek 1/10, Taman Molek',
+                'city' => 'Johor Bahru',
+                'state' => 'Johor',
+                'postal_code' => '81100',
+                'phone' => '+607 355 4420',
+                'whatsapp_number' => '60192589922',
+                'whatsapp_prefill_text' => 'Hye NMFFurniture JB, I would like to check available floor stock.',
+                'map_embed_url' => 'https://maps.google.com/maps?q=Taman+Molek+Johor+Bahru&t=m&z=14&output=embed',
+                'opening_hours' => 'Daily: 11:00 AM - 8:00 PM',
+                'image' => 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=800&q=80',
+                'is_active' => true,
+            ]
+        );
 
         // 5. Gallery Items Data
         $gallery = [
@@ -450,64 +486,72 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($gallery as $g) {
-            GalleryItem::create($g);
+            GalleryItem::firstOrCreate(['title' => $g['title']], $g);
         }
 
         // 6. Create Initial Promotional Coupons
-        \App\Models\Coupon::create([
-            'code' => 'WELCOME100',
-            'type' => 'fixed',
-            'value' => 100.00,
-            'min_spend' => 1000.00,
-            'usage_limit' => 500,
-            'is_active' => true,
-        ]);
+        \App\Models\Coupon::firstOrCreate(
+            ['code' => 'WELCOME100'],
+            [
+                'type' => 'fixed',
+                'value' => 100.00,
+                'min_spend' => 1000.00,
+                'usage_limit' => 500,
+                'is_active' => true,
+            ]
+        );
 
-        \App\Models\Coupon::create([
-            'code' => 'NMF10',
-            'type' => 'percentage',
-            'value' => 10.00,
-            'min_spend' => 2000.00,
-            'max_discount' => 500.00,
-            'usage_limit' => 200,
-            'is_active' => true,
-        ]);
+        \App\Models\Coupon::firstOrCreate(
+            ['code' => 'NMF10'],
+            [
+                'type' => 'percentage',
+                'value' => 10.00,
+                'min_spend' => 2000.00,
+                'max_discount' => 500.00,
+                'usage_limit' => 200,
+                'is_active' => true,
+            ]
+        );
 
-        \App\Models\Coupon::create([
-            'code' => 'RAYA50',
-            'type' => 'fixed',
-            'value' => 50.00,
-            'min_spend' => 500.00,
-            'usage_limit' => 1000,
-            'is_active' => true,
-        ]);
+        \App\Models\Coupon::firstOrCreate(
+            ['code' => 'RAYA50'],
+            [
+                'type' => 'fixed',
+                'value' => 50.00,
+                'min_spend' => 500.00,
+                'usage_limit' => 1000,
+                'is_active' => true,
+            ]
+        );
 
         // 7. Seed Verified Customer Reviews
         $firstProduct = Product::first();
         if ($firstProduct) {
-            \App\Models\Review::create([
-                'product_id' => $firstProduct->id,
-                'customer_name' => 'Datin Faridah Binti Hashim',
-                'customer_email' => 'faridah@example.com',
-                'rating' => 5,
-                'title' => 'Exceptional tailoring & 5-year solid frame warranty',
-                'comment' => 'We visited the Bukit Jelutong showroom and customized the English Modern Channel in champagne velvet. The delivery and installation crew were courteous and punctual. The frame feels exceptionally sturdy and the pocketed coils give supreme comfort.',
-                'image_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80',
-                'is_verified' => true,
-                'is_approved' => true,
-            ]);
+            \App\Models\Review::firstOrCreate(
+                ['product_id' => $firstProduct->id, 'customer_email' => 'faridah@example.com'],
+                [
+                    'customer_name' => 'Datin Faridah Binti Hashim',
+                    'rating' => 5,
+                    'title' => 'Exceptional tailoring & 5-year solid frame warranty',
+                    'comment' => 'We visited the Bukit Jelutong showroom and customized the English Modern Channel in champagne velvet. The delivery and installation crew were courteous and punctual. The frame feels exceptionally sturdy and the pocketed coils give supreme comfort.',
+                    'image_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80',
+                    'is_verified' => true,
+                    'is_approved' => true,
+                ]
+            );
 
-            \App\Models\Review::create([
-                'product_id' => $firstProduct->id,
-                'customer_name' => 'Keith Tan & Melissa',
-                'customer_email' => 'keith.tan@example.com',
-                'rating' => 5,
-                'title' => 'Pet-friendly fabric is a game changer!',
-                'comment' => 'We have two golden retrievers. Spills and muddy paw prints literally wipe clean with just a damp microfiber cloth as promised. Best Malaysian furniture investment we have made.',
-                'image_url' => 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80',
-                'is_verified' => true,
-                'is_approved' => true,
-            ]);
+            \App\Models\Review::firstOrCreate(
+                ['product_id' => $firstProduct->id, 'customer_email' => 'keith.tan@example.com'],
+                [
+                    'customer_name' => 'Keith Tan & Melissa',
+                    'rating' => 5,
+                    'title' => 'Pet-friendly fabric is a game changer!',
+                    'comment' => 'We have two golden retrievers. Spills and muddy paw prints literally wipe clean with just a damp microfiber cloth as promised. Best Malaysian furniture investment we have made.',
+                    'image_url' => 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?auto=format&fit=crop&w=600&q=80',
+                    'is_verified' => true,
+                    'is_approved' => true,
+                ]
+            );
         }
     }
 }
