@@ -13,8 +13,9 @@ echo "=== $(date -u '+%Y-%m-%d %H:%M:%S UTC') deploy start ===" >> "$LOG_FILE"
 
 cd "$DEPLOY_DIR"
 
-# Pull latest commits if tracking
+# Pull latest commits
 git fetch origin main >> "$LOG_FILE" 2>&1 || true
+git reset --hard origin/main >> "$LOG_FILE" 2>&1 || true
 
 if docker compose up -d --build >> "$LOG_FILE" 2>&1; then
     STATUS=$(docker compose ps --format '{{.Service}}={{.Status}}' | tr '\n' ' ')
