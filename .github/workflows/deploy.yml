@@ -45,6 +45,41 @@ jobs:
           PORT="${SSH_PORT:-22}"
           ssh-keyscan -p "$PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
+      - name: Test SSH connection & diagnose
+        env:
+          SSH_USER: ${{ secrets.VPS_USER }}
+          SSH_HOST: ${{ secrets.VPS_HOST }}
+          SSH_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          PORT="${SSH_PORT:-22}"
+          echo "========================================================"
+          echo "DEPLOY PUBLIC KEY (Verify this is in ~/.ssh/authorized_keys on VPS):"
+          ssh-keygen -y -f ~/.ssh/deploy_key
+          echo "========================================================"
+
+          if ! ssh -i ~/.ssh/deploy_key \
+                  -p "$PORT" \
+                  -o StrictHostKeyChecking=accept-new \
+                  -o ConnectTimeout=15 \
+                  -o BatchMode=yes \
+                  "$SSH_USER@$SSH_HOST" "echo Connected as user: \$(whoami)"; then
+            echo ""
+            echo "::error::SSH Connection failed. See diagnosis details below."
+            echo "=== TROUBLESHOOTING CHECKLIST ==="
+            echo "1. The public key above MUST be present in /home/$SSH_USER/.ssh/authorized_keys on your VPS."
+            echo "2. On your VPS, run: chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
+            echo "3. Ensure VPS_USER exactly matches the Linux username on the server."
+            echo ""
+            echo "=== Verbose SSH Logs (ssh -vvv) ==="
+            ssh -vvv -i ~/.ssh/deploy_key \
+                -p "$PORT" \
+                -o StrictHostKeyChecking=accept-new \
+                -o ConnectTimeout=10 \
+                -o BatchMode=yes \
+                "$SSH_USER@$SSH_HOST" "true" 2>&1 | tail -n 35 || true
+            exit 1
+          fi
+
       - name: Start deploy (detached on server)
         env:
           SSH_USER: ${{ secrets.VPS_USER }}
