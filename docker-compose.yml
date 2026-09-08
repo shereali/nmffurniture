@@ -36,7 +36,7 @@ services:
       APP_KEY: ${APP_KEY}
       APP_URL: https://nmffurniture.com
       DB_CONNECTION: mysql
-      DB_HOST: db
+      DB_HOST: ${DB_HOST:-nmffurniture-db-1}
       DB_PORT: 3306
       DB_DATABASE: nmffurniture
       DB_USERNAME: nmffurniture_user
@@ -81,7 +81,10 @@ services:
       retries: 20
       start_period: 30s
     networks:
-      - default
+      default:
+        aliases:
+          - nmffurniture-db-1
+          - nmffurniture-db
 
 volumes:
   backend-storage:
