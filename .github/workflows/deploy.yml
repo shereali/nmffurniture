@@ -26,15 +26,12 @@ jobs:
 
           # Support both raw private key (PEM / OpenSSH) and base64-encoded key
           if echo "$SSH_KEY" | grep -q -- "-----BEGIN"; then
-            printf "%s\n" "$SSH_KEY" > ~/.ssh/deploy_key
+            printf "%s\n" "$SSH_KEY" | tr -d '\r' > ~/.ssh/deploy_key
           else
-            echo "$SSH_KEY" | tr -d '\r ' | base64 -d > ~/.ssh/deploy_key
+            echo "$SSH_KEY" | tr -d '[:space:]' | base64 -d > ~/.ssh/deploy_key
           fi
 
           chmod 600 ~/.ssh/deploy_key
-
-          # Ensure key ends with a newline
-          sed -i -e '$a\' ~/.ssh/deploy_key 2>/dev/null || true
 
           # Validate key syntax early with clear error feedback
           ssh-keygen -y -f ~/.ssh/deploy_key >/dev/null || {
@@ -42,8 +39,9 @@ jobs:
             exit 1
           }
 
-          PORT="${SSH_PORT:-22}"
-          ssh-keyscan -p "$PORT" -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          HOST=$(echo "$SSH_HOST" | tr -d '[:space:]')
+          PORT=$(echo "${SSH_PORT:-22}" | tr -d '[:space:]')
+          ssh-keyscan -p "$PORT" -H "$HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Test SSH connection & diagnose
         env:
@@ -51,7 +49,9 @@ jobs:
           SSH_HOST: ${{ secrets.VPS_HOST }}
           SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
-          PORT="${SSH_PORT:-22}"
+          USER=$(echo "$SSH_USER" | tr -d '[:space:]')
+          HOST=$(echo "$SSH_HOST" | tr -d '[:space:]')
+          PORT=$(echo "${SSH_PORT:-22}" | tr -d '[:space:]')
           echo "========================================================"
           echo "DEPLOY PUBLIC KEY (Verify this is in ~/.ssh/authorized_keys on VPS):"
           ssh-keygen -y -f ~/.ssh/deploy_key
@@ -63,11 +63,11 @@ jobs:
                   -o IdentitiesOnly=yes \
                   -o ConnectTimeout=15 \
                   -o BatchMode=yes \
-                  "$SSH_USER@$SSH_HOST" "echo Connected as user: \$(whoami)"; then
+                  "$USER@$HOST" "echo Connected as user: \$(whoami)"; then
             echo ""
             echo "::error::SSH Connection failed. See diagnosis details below."
             echo "=== TROUBLESHOOTING CHECKLIST ==="
-            echo "1. The public key above MUST be present in /home/$SSH_USER/.ssh/authorized_keys on your VPS."
+            echo "1. The public key above MUST be present in /home/$USER/.ssh/authorized_keys on your VPS."
             echo "2. On your VPS, run: chmod 700 ~/.ssh && chmod 600 ~/.ssh/authorized_keys"
             echo "3. Ensure VPS_USER exactly matches the Linux username on the server."
             echo ""
@@ -77,7 +77,7 @@ jobs:
                 -o StrictHostKeyChecking=accept-new \
                 -o ConnectTimeout=10 \
                 -o BatchMode=yes \
-                "$SSH_USER@$SSH_HOST" "true" 2>&1 | tail -n 35 || true
+                "$USER@$HOST" "true" 2>&1 | tail -n 35 || true
             exit 1
           fi
 
@@ -87,13 +87,15 @@ jobs:
           SSH_HOST: ${{ secrets.VPS_HOST }}
           SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
-          PORT="${SSH_PORT:-22}"
+          USER=$(echo "$SSH_USER" | tr -d '[:space:]')
+          HOST=$(echo "$SSH_HOST" | tr -d '[:space:]')
+          PORT=$(echo "${SSH_PORT:-22}" | tr -d '[:space:]')
           ssh -i ~/.ssh/deploy_key \
               -p "$PORT" \
               -o StrictHostKeyChecking=accept-new \
               -o ConnectTimeout=20 \
               -o BatchMode=yes \
-              "$SSH_USER@$SSH_HOST" \
+              "$USER@$HOST" \
               "rm -f /var/log/nmffurniture/deploy.done; setsid nohup bash /var/www/nmffurniture/deploy/deploy.sh </dev/null >/dev/null 2>&1 & echo started; exit 0"
 
       - name: Wait for deploy to finish
@@ -102,12 +104,14 @@ jobs:
           SSH_HOST: ${{ secrets.VPS_HOST }}
           SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
-          PORT="${SSH_PORT:-22}"
+          USER=$(echo "$SSH_USER" | tr -d '[:space:]')
+          HOST=$(echo "$SSH_HOST" | tr -d '[:space:]')
+          PORT=$(echo "${SSH_PORT:-22}" | tr -d '[:space:]')
           for i in $(seq 1 60); do
             RESULT=$(ssh -i ~/.ssh/deploy_key \
                 -p "$PORT" \
                 -o StrictHostKeyChecking=accept-new \
-                "$SSH_USER@$SSH_HOST" \
+                "$USER@$HOST" \
                 "cat /var/log/nmffurniture/deploy.done 2>/dev/null || echo WAITING")
             if [ "$RESULT" = "done" ]; then
               echo "Deploy finished."
@@ -126,9 +130,11 @@ jobs:
           SSH_HOST: ${{ secrets.VPS_HOST }}
           SSH_PORT: ${{ secrets.VPS_PORT }}
         run: |
-          PORT="${SSH_PORT:-22}"
+          USER=$(echo "$SSH_USER" | tr -d '[:space:]')
+          HOST=$(echo "$SSH_HOST" | tr -d '[:space:]')
+          PORT=$(echo "${SSH_PORT:-22}" | tr -d '[:space:]')
           ssh -i ~/.ssh/deploy_key \
               -p "$PORT" \
               -o StrictHostKeyChecking=accept-new \
-              "$SSH_USER@$SSH_HOST" \
+              "$USER@$HOST" \
               "cat /var/log/nmffurniture/deploy.status"
