@@ -60,6 +60,7 @@ jobs:
           if ! ssh -i ~/.ssh/deploy_key \
                   -p "$PORT" \
                   -o StrictHostKeyChecking=accept-new \
+                  -o IdentitiesOnly=yes \
                   -o ConnectTimeout=15 \
                   -o BatchMode=yes \
                   "$SSH_USER@$SSH_HOST" "echo Connected as user: \$(whoami)"; then
